@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { enGB } from "date-fns/locale/en-GB";
 
+registerLocale("en-GB", enGB);
 export default function DateRange({
   item,
   taskId,
@@ -58,7 +60,7 @@ export default function DateRange({
         <span className="absolute -top-3.5 left-2 px-1 text-[10px] text-muted-foreground text-green-300 bg-muted/0">
           Start
         </span>
-        {/* <div className="flex flex-row gap-1 text-center items-center">
+        <div className="flex flex-row gap-1 text-center items-center">
           <span className="text-xs text-muted-foreground">
             {formatDate(item.startdate)}
           </span>
@@ -67,8 +69,8 @@ export default function DateRange({
           </span>
         </div>
 
-        <span className="text-muted-foreground text-[10px]">▾</span> */}
-        <LocaleWithTime
+        <span className="text-muted-foreground text-[10px]">▾</span>
+        {/* <LocaleWithTime
           onChange={(date: Date | null) =>
             handleTimeChange(
               taskId,
@@ -78,10 +80,11 @@ export default function DateRange({
               date ? date.getTime() : null,
             )
           }
-        />
-        {/* <input
+        /> */}
+        <input
           ref={(el) => (inputRefStart.current[item.id] = el)}
           type="datetime-local"
+          lang="en-GB"
           value={item.startdate ? formatDateTimeLocal(item.startdate) : ""}
           onChange={(e) =>
             handleTimeChange(
@@ -93,7 +96,7 @@ export default function DateRange({
             )
           }
           className="absolute inset-0 opacity-0"
-        /> */}
+        />
       </div>
 
       {/* END DATE */}

@@ -2,6 +2,7 @@ import { StepTask, Priority } from "@/types/maintenance";
 import { Check, Circle, Clock1, Hourglass, Loader2 } from "lucide-react";
 import { useRef } from "react";
 import DateRange from "./DateRange";
+import { formatDistanceToNow } from "date-fns";
 
 interface StepProgressProps {
   task: StepTask;
@@ -104,9 +105,20 @@ export function StepProgress({
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div>
-          <h3 className="font-display font-semibold text-base text-card-foreground">
-            {task.title}
-          </h3>
+          <div className="flex flex-row items-center">
+            <h3 className="font-display font-semibold text-base text-card-foreground">
+              {task.title}
+              <span className="mx-1">•</span>
+            </h3>
+            <div className="text-[9px] text-muted-foreground">
+              last modified:{" "}
+              <span className="text-[9px] text-muted-foreground italic">
+                {formatDistanceToNow(new Date(task.lastmodified), {
+                  addSuffix: true,
+                })}
+              </span>
+            </div>
+          </div>
           <p className="text-sm text-muted-foreground font-mono mt-0.5">
             {task.equipment}
           </p>
@@ -122,15 +134,6 @@ export function StepProgress({
       <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
         <span>
           PIC: <strong className="text-foreground">{task.assignee}</strong>
-        </span>
-        <span>
-          Due:{" "}
-          <strong className="text-foreground">
-            {new Date(task.dueDate).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-            })}
-          </strong>
         </span>
       </div>
 

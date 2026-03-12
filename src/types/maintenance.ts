@@ -10,15 +10,6 @@ export interface MaintenanceStep {
   status: StepStatus;
 }
 
-export interface MaintenanceTask {
-  id: string;
-  title: string;
-  equipment: string;
-  priority: Priority;
-  assignee: string;
-  dueDate: string;
-  steps: MaintenanceStep[];
-}
 export interface StepGroup {
   id: string;
   stepname: string;
@@ -33,6 +24,6 @@ export interface StepTask {
   dicipline: string;
   priority: "low" | "medium" | "high" | "critical";
   assignee: string;
-  dueDate: string;
+  lastmodified: number;
   steps: StepGroup[];
 }
