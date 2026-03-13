@@ -3,7 +3,7 @@ export type Priority = "low" | "medium" | "high" | "critical";
 
 export interface MaintenanceStep {
   id: string;
-  title: string;
+  steptitle: string;
   description: string;
   startdate?: number;
   enddate?: number;
