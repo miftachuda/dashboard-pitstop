@@ -121,13 +121,14 @@ export function StepProgress({
     s.steplist.every((i) => i.status === "completed"),
   );
   const [progress, setProgress] = useState(0);
-
+  //fix taskID etc
   const handleProgressChange = (
     taskId: string,
     stepId: string,
     itemId: string,
     val: number,
   ) => {
+    setProgress(val);
     setTasks((prev) =>
       prev.map((task) =>
         task.id === taskId
@@ -279,6 +280,9 @@ export function StepProgress({
                           </div>
                           <ProgressSlider
                             value={progress}
+                            taskId={task.id}
+                            stepId={step.id}
+                            itemId={item.id}
                             onChange={handleProgressChange}
                           />
                           <div className="flex-1 min-w-0 p-2">

@@ -1,6 +1,12 @@
 import { useRef } from "react";
 
-export default function ProgressSlider({ value, onChange }) {
+export default function ProgressSlider({
+  taskId,
+  stepId,
+  itemId,
+  value,
+  onChange,
+}) {
   const barRef = useRef(null);
 
   const updateValue = (clientX) => {
