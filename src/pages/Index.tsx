@@ -172,7 +172,7 @@ const Index = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary"></div>
           </div>
         ) : (
-          <div className="grid items-start grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div className="grid items-start grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-5">
             {filteredTasks.map((task) => (
               <StepProgress
                 key={task.id}

@@ -5,6 +5,7 @@ export interface MaintenanceStep {
   id: string;
   steptitle: string;
   description: string;
+  progress: number;
   startdate?: number;
   enddate?: number;
   status: StepStatus;

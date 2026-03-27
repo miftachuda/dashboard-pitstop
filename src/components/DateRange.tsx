@@ -51,7 +51,7 @@ export default function DateRange({
     );
   };
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 pt-2">
       {/* START DATE */}
       <div
         className="relative inline-flex items-center gap-1 border rounded-md px-1 py-1 bg-muted/30 hover:bg-muted transition cursor-pointer"

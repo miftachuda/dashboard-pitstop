@@ -13,7 +13,7 @@ export default function ProgressSlider({
     const rect = barRef.current.getBoundingClientRect();
     const percent = ((clientX - rect.left) / rect.width) * 100;
     const clamped = Math.max(0, Math.min(100, percent));
-    onChange(Math.round(clamped));
+    onChange(taskId, stepId, itemId, Math.round(clamped));
   };
 
   const handleMouseDown = (e) => {
@@ -44,7 +44,9 @@ export default function ProgressSlider({
         />
       </div>
 
-      <span className="select-none">{String(value).padStart(2, "0")}%</span>
+      <span className="w-10 text-right font-mono select-none">
+        {String(value).padStart(2, "0")}%
+      </span>
     </div>
   );
 }

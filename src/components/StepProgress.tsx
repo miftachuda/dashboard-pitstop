@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import DateRange from "./DateRange";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import ProgressSlider from "./InputProgress";
+import ProgressSlider from "./ProgressSlider";
 
 interface StepProgressProps {
   task: StepTask;
@@ -108,27 +108,57 @@ export function StepProgress({
       ),
     );
   };
-  const completed = task.steps.reduce(
-    (a, s) => a + s.steplist.filter((i) => i.status === "completed").length,
+  const totalProgress = task.steps.reduce(
+    (acc, step) =>
+      acc + step.steplist.reduce((sum, item) => sum + (item.progress || 0), 0),
     0,
   );
 
-  const total = task.steps.reduce((a, s) => a + s.steplist.length, 0);
+  const totalItems = task.steps.reduce(
+    (acc, step) => acc + step.steplist.length,
+    0,
+  );
 
-  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+  // rata-rata progress
+  const percent = totalItems > 0 ? Math.round(totalProgress / totalItems) : 0;
 
   const allDone = task.steps.every((s) =>
     s.steplist.every((i) => i.status === "completed"),
   );
-  const [progress, setProgress] = useState(0);
-  //fix taskID etc
+  const onUpdateDescription = (
+    taskId: string,
+    stepId: string,
+    itemId: string,
+    value: string,
+  ) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === taskId
+          ? {
+              ...task,
+              steps: task.steps.map((step) =>
+                step.id === stepId
+                  ? {
+                      ...step,
+                      steplist: step.steplist.map((item) =>
+                        item.id === itemId
+                          ? { ...item, description: value }
+                          : item,
+                      ),
+                    }
+                  : step,
+              ),
+            }
+          : task,
+      ),
+    );
+  };
   const handleProgressChange = (
     taskId: string,
     stepId: string,
     itemId: string,
     val: number,
   ) => {
-    setProgress(val);
     setTasks((prev) =>
       prev.map((task) =>
         task.id === taskId
@@ -142,7 +172,13 @@ export function StepProgress({
                         item.id === itemId
                           ? {
                               ...item,
-                              status: val === 100 ? "completed" : "in-progress",
+                              progress: val, // ✅ simpan progress per item
+                              status:
+                                val === 100
+                                  ? "completed"
+                                  : val > 0
+                                    ? "in-progress"
+                                    : "not yet",
                             }
                           : item,
                       ),
@@ -153,6 +189,11 @@ export function StepProgress({
           : task,
       ),
     );
+  };
+  const handleAutoResize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const el = e.target;
+    el.style.height = "auto"; // reset
+    el.style.height = el.scrollHeight + "px"; // grow
   };
   return (
     <div className="bg-card rounded-xl border p-3 hover:shadow-lg transition-shadow duration-300">
@@ -230,12 +271,22 @@ export function StepProgress({
                   {step.steplist.map((item) => (
                     <div
                       key={item.id}
-                      className="w-full flex items-center mt-2 border gap-1 my-1 rounded-lg hover:bg-secondary/60 transition-colors text-left group"
+                      className="w-full flex items-center mt-2 border gap-1 my-1 rounded-lg  transition-colors text-left group"
                     >
                       {/* Status indicator */}
+
                       <div className="flex flex-col w-full">
+                        <p
+                          className={`text-xs text-wrap font-medium truncate ${
+                            item.status === "completed"
+                              ? "text-card-foreground"
+                              : "text-muted-foreground"
+                          } px-3 py-2`}
+                        >
+                          {item.steptitle}
+                        </p>
                         <div>
-                          <div className="flex items-center w-full gap-3 p-2 rounded-md hover:bg-muted/50">
+                          <div className="flex items-center w-full gap-3 p-2 rounded-md ">
                             <div
                               className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold
       ${item.status === "completed" ? "bg-success text-success-foreground" : ""}
@@ -252,14 +303,12 @@ export function StepProgress({
                               )}
                             </div>
                             <button
-                              // onClick={() =>
-                              //   onStepToggle(task.id, step.id, item.id)
-                              // }
-                              className={`flex-shrink-0 text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md
-      ${item.status === "completed" ? "bg-success/10 text-success" : ""}
-      ${item.status === "in-progress" ? "bg-accent/15 text-accent-foreground" : ""}
-      ${item.status === "not yet" ? "bg-secondary text-muted-foreground" : ""}
-    `}
+                              className={`flex-shrink-0 min-w-[80px] text-center whitespace-nowrap
+    text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md
+    ${item.status === "completed" ? "bg-success/10 text-success" : ""}
+    ${item.status === "in-progress" ? "bg-accent/15 text-accent-foreground" : ""}
+    ${item.status === "not yet" ? "bg-secondary text-muted-foreground" : ""}
+  `}
                             >
                               {item.status}
                             </button>
@@ -279,26 +328,35 @@ export function StepProgress({
                             </div>
                           </div>
                           <ProgressSlider
-                            value={progress}
+                            value={item.progress}
                             taskId={task.id}
                             stepId={step.id}
                             itemId={item.id}
                             onChange={handleProgressChange}
                           />
-                          <div className="flex-1 min-w-0 p-2">
-                            <p
-                              className={`text-xs text-wrap font-medium truncate ${
-                                item.status === "completed"
-                                  ? "text-card-foreground"
-                                  : "text-muted-foreground"
-                              }`}
-                            >
-                              {item.steptitle}
-                            </p>
-
-                            <p className="text-xs text-muted-foreground truncate">
-                              {item.description}
-                            </p>
+                          <div className="flex-1 min-w-0 px-3 py-2">
+                            <textarea
+                              rows={1}
+                              spellCheck={false}
+                              value={item.description || ""}
+                              onChange={(e) => {
+                                handleAutoResize(e);
+                                onUpdateDescription(
+                                  task.id,
+                                  step.id,
+                                  item.id,
+                                  e.target.value,
+                                );
+                              }}
+                              placeholder="Click to add description"
+                              className="w-full text-xs 
+             bg-muted/40 border border-border rounded-[2px]
+             px-2 py-1
+             outline-none
+             focus:ring-1 focus:ring-accent
+             resize-none overflow-hidden
+             text-foreground placeholder:text-muted-foreground"
+                            />
                           </div>
                         </div>
                       </div>
