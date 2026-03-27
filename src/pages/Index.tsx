@@ -73,6 +73,15 @@ const Index = () => {
       console.error("Failed to sync with PocketBase", err);
     }
   };
+  const syncTaskToPocketBase = async (task) => {
+    try {
+      await pb.collection("pitstop").update(task.id, {
+        steps: task.steps,
+      });
+    } catch (err) {
+      console.error("Failed to sync with PocketBase", err);
+    }
+  };
   function recordToStepTask(r: any): StepTask {
     let steps: StepGroup[] = [];
 
@@ -107,6 +116,39 @@ const Index = () => {
 
     load();
   }, []);
+  const [taskStates, setTaskStates] = useState<{
+    [taskId: string]: {
+      isDirty: boolean;
+      isSaving: boolean;
+      isSaved: boolean;
+    };
+  }>({});
+  const updateTaskState = (taskId: string, newState: Partial<any>) => {
+    setTaskStates((prev) => ({
+      ...prev,
+      [taskId]: {
+        ...prev[taskId],
+        ...newState,
+      },
+    }));
+  };
+  const handleSave = async (taskId: string) => {
+    try {
+      updateTaskState(taskId, { isSaving: true, isSaved: false });
+
+      // API call here
+
+      await syncTaskToPocketBase(tasks.find((t) => t.id === taskId)!);
+      updateTaskState(taskId, {
+        isSaving: false,
+        isDirty: false,
+        isSaved: true,
+      });
+    } catch (err) {
+      updateTaskState(taskId, { isSaving: false });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -179,6 +221,9 @@ const Index = () => {
                 task={task}
                 onStepToggle={handleStepToggle}
                 setTasks={setTasks}
+                state={taskStates[task.id] || {}}
+                updateTaskState={updateTaskState}
+                onSave={handleSave}
               />
             ))}
           </div>

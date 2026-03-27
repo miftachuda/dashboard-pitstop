@@ -10,6 +10,13 @@ interface StepProgressProps {
   task: StepTask;
   onStepToggle: (taskId: string, stepId: string, itemId: string) => void;
   setTasks: React.Dispatch<React.SetStateAction<StepTask[]>>;
+  state: {
+    isDirty?: boolean;
+    isSaving?: boolean;
+    isSaved?: boolean;
+  };
+  updateTaskState: (taskId: string, state: any) => void;
+  onSave: (taskId: string) => void;
 }
 
 const priorityClasses: Record<Priority, string> = {
@@ -42,6 +49,9 @@ export function StepProgress({
   task,
   onStepToggle,
   setTasks,
+  state,
+  updateTaskState,
+  onSave,
 }: StepProgressProps) {
   const [openSteps, setOpenSteps] = useState<Record<string, boolean>>({});
 
@@ -88,6 +98,10 @@ export function StepProgress({
     field: "startdate" | "enddate",
     value: number,
   ) => {
+    updateTaskState(task.id, {
+      isDirty: true,
+      isSaved: false,
+    });
     setTasks((prev) =>
       prev.map((task) =>
         task.id === taskId
@@ -131,6 +145,10 @@ export function StepProgress({
     itemId: string,
     value: string,
   ) => {
+    updateTaskState(task.id, {
+      isDirty: true,
+      isSaved: false,
+    });
     setTasks((prev) =>
       prev.map((task) =>
         task.id === taskId
@@ -159,6 +177,10 @@ export function StepProgress({
     itemId: string,
     val: number,
   ) => {
+    updateTaskState(task.id, {
+      isDirty: true,
+      isSaved: false,
+    });
     setTasks((prev) =>
       prev.map((task) =>
         task.id === taskId
@@ -199,7 +221,7 @@ export function StepProgress({
     <div className="bg-card rounded-xl border p-3 hover:shadow-lg transition-shadow duration-300">
       {/* Header */}
       <div className="flex items-start justify-between mb-1">
-        <div>
+        <div className="flex flex-row gap-4">
           <div className="flex flex-row items-center">
             <h3 className="font-display font-semibold text-base text-card-foreground">
               {task.title}
@@ -214,12 +236,27 @@ export function StepProgress({
               </span>
             </div>
           </div>
+          <span
+            className={`text-xs font-semibold px-2 py-1 rounded-md uppercase tracking-wider ${priorityClasses[task.priority]}`}
+          >
+            {priorityLabels[task.priority]}
+          </span>
         </div>
-        <span
-          className={`text-xs font-semibold px-2 py-1 rounded-md uppercase tracking-wider ${priorityClasses[task.priority]}`}
+
+        <button
+          onClick={() => onSave(task.id)}
+          disabled={!state.isDirty || state.isSaving}
+          className={`text-[10px] font-mono px-2 py-1 rounded-md transition
+    ${
+      state.isSaved
+        ? "bg-green-500/10 text-green-600"
+        : state.isDirty
+          ? "bg-blue-500/10 text-blue-600"
+          : "bg-gray-200 text-gray-400 cursor-not-allowed"
+    }`}
         >
-          {priorityLabels[task.priority]}
-        </span>
+          {state.isSaving ? "Saving..." : state.isSaved ? "Saved ✓" : "Save"}
+        </button>
       </div>
       <div className="mb-1">
         <div className="flex justify-between items-center mb-1.5">
