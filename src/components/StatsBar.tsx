@@ -70,7 +70,7 @@ export function StatsBar({ tasks }: StatsBarProps) {
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
       <div
         key={"Total Equipments"}
         className="bg-card rounded-xl border p-4 flex items-center gap-4"
@@ -116,7 +116,7 @@ export function StatsBar({ tasks }: StatsBarProps) {
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className="bg-card rounded-xl border p-4 flex items-center gap-4"
+          className="bg-card rounded-xl border px-4 pt-4 pb-1 flex items-center gap-4"
         >
           <div
             className={`w-10 h-10 rounded-lg bg-secondary flex items-center justify-center ${stat.color}`}

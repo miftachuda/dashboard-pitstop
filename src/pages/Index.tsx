@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 
-import { StepGroup, StepStatus, StepTask } from "@/types/maintenance";
+import {
+  equipmentTypes,
+  StepGroup,
+  StepStatus,
+  StepTask,
+} from "@/types/maintenance";
 import { StepProgress } from "@/components/StepProgress";
 import { StatsBar } from "@/components/StatsBar";
 import { pb } from "@/lib/pocketbase";
+import { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
+import { StatsBar2 } from "@/components/StatsBar2";
 
 const Index = () => {
   const [tasks, setTasks] = useState<StepTask[]>([]);
   const [search, setSearch] = useState("");
   const [prefixFilter, setPrefixFilter] = useState<string | null>(null);
+  const [selectedType, setselectedType] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const cycleStatus = (current: StepStatus): StepStatus => {
     if (current === "not yet") return "in-progress";
@@ -35,7 +44,11 @@ const Index = () => {
       !prefixFilter ||
       task.title?.substring(0, 3).toUpperCase() === prefixFilter.toUpperCase();
 
-    return matchSearch && matchPrefix;
+    const matchType =
+      !selectedType || // kalau belum pilih → semua lolos
+      task.type === selectedType;
+
+    return matchSearch && matchPrefix && matchType;
   });
   const prefixes = ["021", "022", "023", "024", "025", "041"];
   const handleStepToggle = async (
@@ -144,14 +157,17 @@ const Index = () => {
         isDirty: false,
         isSaved: true,
       });
+      toast.success("Changes saved");
     } catch (err) {
       updateTaskState(taskId, { isSaving: false });
+      toast.error("Failed to save changes");
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
+      <Toaster />
       <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
@@ -175,7 +191,10 @@ const Index = () => {
             <div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-primary"></div>
           </div>
         ) : (
-          <StatsBar tasks={tasks} />
+          <div className="flex flex-col gap-0">
+            <StatsBar tasks={tasks} />
+            <StatsBar2 tasks={tasks} />
+          </div>
         )}
 
         <div className="mt-4 mb-6">
@@ -203,6 +222,28 @@ const Index = () => {
               onClick={() => setPrefixFilter(p)}
               className={`px-3 py-1 rounded-md border text-sm ${
                 prefixFilter === p ? "bg-primary text-white" : "bg-white"
+              }`}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-2 mt-3 mb-6">
+          <button
+            onClick={() => setselectedType(null)}
+            className={`px-3 py-1 rounded-md border text-sm ${
+              selectedType === null ? "bg-primary text-white" : "bg-white"
+            }`}
+          >
+            All
+          </button>
+
+          {equipmentTypes.map((p) => (
+            <button
+              key={p}
+              onClick={() => setselectedType(p)}
+              className={`px-3 py-1 rounded-md border text-sm ${
+                selectedType === p ? "bg-primary text-white" : "bg-white"
               }`}
             >
               {p}

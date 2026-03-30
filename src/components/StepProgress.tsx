@@ -1,10 +1,13 @@
-import { StepTask, Priority } from "@/types/maintenance";
+import { StepTask, Priority, EquipmentType } from "@/types/maintenance";
 import { Check, Circle, Hourglass } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DateRange from "./DateRange";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import ProgressSlider from "./ProgressSlider";
+import AutoResizeTextarea from "./TextArea";
+import { pb } from "@/lib/pocketbase";
+import { toast } from "react-hot-toast";
 
 interface StepProgressProps {
   task: StepTask;
@@ -25,12 +28,36 @@ const priorityClasses: Record<Priority, string> = {
   high: "bg-warning/20 text-warning-foreground",
   critical: "bg-destructive/15 text-destructive",
 };
+const typeClasses: Record<EquipmentType, string> = {
+  "Heat Exchanger": "bg-blue-100 text-blue-800",
+  Piping: "bg-green-100 text-green-800",
+  Furnace: "bg-orange-100 text-orange-800",
+  Column: "bg-yellow-100 text-yellow-800",
+  Vessel: "bg-purple-100 text-purple-800",
+  Pump: "bg-red-100 text-red-800",
+  Compressor: "bg-indigo-100 text-indigo-800",
+  "Jet Ejector": "bg-teal-100 text-teal-800",
+  Strainer: "bg-gray-100 text-gray-800",
+  Other: "bg-secondary text-secondary-foreground",
+};
 
 const priorityLabels: Record<Priority, string> = {
   low: "Low",
   medium: "Medium",
   high: "High",
   critical: "Critical",
+};
+const typeLabels: Record<EquipmentType, string> = {
+  "Heat Exchanger": "Heat Exchanger",
+  Piping: "Piping",
+  Column: "Column",
+  Furnace: "Furnace",
+  Vessel: "Vessel",
+  Pump: "Pump",
+  Compressor: "Compressor",
+  "Jet Ejector": "Jet Ejector",
+  Strainer: "Strainer",
+  Other: "Other",
 };
 function getDuration(start?: number, end?: number) {
   if (!start || !end) return "-";
@@ -212,10 +239,25 @@ export function StepProgress({
       ),
     );
   };
-  const handleAutoResize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const el = e.target;
-    el.style.height = "auto"; // reset
-    el.style.height = el.scrollHeight + "px"; // grow
+  const [pic, setPic] = useState(task.assignee || "");
+  const [editing, setEditing] = useState(false);
+
+  const handleSave = async () => {
+    setEditing(false);
+
+    if (pic !== task.assignee) {
+      await onUpdateAssignee(task.id, pic);
+    }
+  };
+  const onUpdateAssignee = async (taskId, assignee) => {
+    try {
+      await pb.collection("pitstop").update(taskId, {
+        assignee,
+      });
+      toast.success("PIC updated");
+    } catch (err) {
+      toast.error(err.message || "Failed to update PIC");
+    }
   };
   return (
     <div className="bg-card rounded-xl border p-3 hover:shadow-lg transition-shadow duration-300">
@@ -237,10 +279,15 @@ export function StepProgress({
             </div>
           </div>
           <span
+            className={`text-xs font-semibold px-2 py-1 rounded-md uppercase tracking-wider ${typeClasses[task.type]}`}
+          >
+            {typeLabels[task.type]}
+          </span>
+          {/* <span
             className={`text-xs font-semibold px-2 py-1 rounded-md uppercase tracking-wider ${priorityClasses[task.priority]}`}
           >
             {priorityLabels[task.priority]}
-          </span>
+          </span> */}
         </div>
 
         <button
@@ -249,17 +296,26 @@ export function StepProgress({
           className={`text-[10px] font-mono px-2 py-1 rounded-md transition
     ${
       state.isSaved
-        ? "bg-green-500/10 text-green-600"
+        ? "bg-green-500/10 text-green-400"
         : state.isDirty
           ? "bg-blue-500/10 text-blue-600"
           : "bg-gray-200 text-gray-400 cursor-not-allowed"
     }`}
         >
-          {state.isSaving ? "Saving..." : state.isSaved ? "Saved ✓" : "Save"}
+          {state.isSaving
+            ? "Saving..."
+            : state.isSaved
+              ? "Saved ✓"
+              : state.isDirty
+                ? "Save"
+                : "Saved"}
         </button>
       </div>
       <div className="mb-1">
-        <div className="flex justify-between items-center mb-1.5">
+        <p className="text-sm text-blue-800 font-mono mt-0.5">
+          {task.equipment}
+        </p>
+        <div className="flex justify-between items-center mb-1">
           <span className="text-xs font-medium text-muted-foreground">
             Progress
           </span>
@@ -276,13 +332,34 @@ export function StepProgress({
           />
         </div>
       </div>
-      <p className="text-sm text-muted-foreground font-mono mt-0.5">
-        {task.equipment}
-      </p>
+
       {/* Meta */}
       <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
         <span>
-          PIC: <strong className="text-foreground">{task.assignee}</strong>
+          PIC:{" "}
+          {editing ? (
+            <input
+              className="text-foreground border rounded px-1"
+              value={pic}
+              autoFocus
+              onChange={(e) => setPic(e.target.value)}
+              onBlur={handleSave}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSave();
+                if (e.key === "Escape") {
+                  setPic(task.assignee);
+                  setEditing(false);
+                }
+              }}
+            />
+          ) : (
+            <strong
+              className="text-foreground cursor-pointer"
+              onClick={() => setEditing(true)}
+            >
+              {pic || "—"}
+            </strong>
+          )}
         </span>
       </div>
 
@@ -308,37 +385,39 @@ export function StepProgress({
                   {step.steplist.map((item) => (
                     <div
                       key={item.id}
-                      className="w-full flex items-center mt-2 border gap-1 my-1 rounded-lg  transition-colors text-left group"
+                      className="flex items-center ml-6 mr-2 mt-2 border gap-1 my-1 rounded-lg  transition-colors text-left group"
                     >
                       {/* Status indicator */}
 
                       <div className="flex flex-col w-full">
-                        <p
-                          className={`text-xs text-wrap font-medium truncate ${
-                            item.status === "completed"
-                              ? "text-card-foreground"
-                              : "text-muted-foreground"
-                          } px-3 py-2`}
-                        >
-                          {item.steptitle}
-                        </p>
-                        <div>
-                          <div className="flex items-center w-full gap-3 p-2 rounded-md ">
-                            <div
-                              className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold
+                        <div className="flex items-center">
+                          <p
+                            className={`text-xs text-wrap font-medium truncate ${
+                              item.status === "completed"
+                                ? "text-card-foreground"
+                                : "text-muted-foreground"
+                            } px-3 pt-2 pb-1`}
+                          >
+                            {item.steptitle}
+                          </p>
+                          <div
+                            className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-semibold
       ${item.status === "completed" ? "bg-success text-success-foreground" : ""}
       ${item.status === "in-progress" ? "bg-accent text-accent-foreground" : ""}
       ${item.status === "not yet" ? "bg-secondary text-muted-foreground" : ""}
     `}
-                            >
-                              {item.status === "completed" ? (
-                                <Check className="w-3.5 h-3.5" />
-                              ) : item.status === "in-progress" ? (
-                                <Hourglass className="w-3.5 h-3.5" />
-                              ) : (
-                                <Circle className="w-3 h-3" />
-                              )}
-                            </div>
+                          >
+                            {item.status === "completed" ? (
+                              <Check className="w-2.5 h-2.5" />
+                            ) : item.status === "in-progress" ? (
+                              <Hourglass className="w-2.5 h-2.5" />
+                            ) : (
+                              <Circle className="w-2 h-2" />
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex items-center w-full gap-3 px-2 rounded-md ">
                             <button
                               className={`flex-shrink-0 min-w-[80px] text-center whitespace-nowrap
     text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md
@@ -372,12 +451,9 @@ export function StepProgress({
                             onChange={handleProgressChange}
                           />
                           <div className="flex-1 min-w-0 px-3 py-2">
-                            <textarea
-                              rows={1}
-                              spellCheck={false}
+                            <AutoResizeTextarea
                               value={item.description || ""}
                               onChange={(e) => {
-                                handleAutoResize(e);
                                 onUpdateDescription(
                                   task.id,
                                   step.id,
@@ -387,12 +463,11 @@ export function StepProgress({
                               }}
                               placeholder="Click to add description"
                               className="w-full text-xs 
-             bg-muted/40 border border-border rounded-[2px]
-             px-2 py-1
-             outline-none
-             focus:ring-1 focus:ring-accent
-             resize-none overflow-hidden
-             text-foreground placeholder:text-muted-foreground"
+    bg-muted/40 border border-border rounded-[2px]
+    px-2 py-1
+    outline-none
+    focus:ring-1 focus:ring-accent
+    text-foreground placeholder:text-muted-foreground"
                             />
                           </div>
                         </div>
