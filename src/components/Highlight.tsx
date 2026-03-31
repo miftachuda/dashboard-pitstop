@@ -11,6 +11,8 @@ import {
 import { pb } from "@/lib/pocketbase";
 import DeleteWithConfirm from "./Deletion";
 import { toast } from "sonner";
+import { formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
+import ActionList from "./ActionList";
 
 export type HighlightItem = {
   id: string;
@@ -123,6 +125,24 @@ export default function Highlight() {
       setSaving(false);
     }
   };
+  function parseFollowUp(value: string | null | undefined): string[] {
+    try {
+      if (!value) return [];
+
+      const parsed = typeof value === "string" ? JSON.parse(value) : value;
+
+      console.log("parsed:", parsed);
+
+      if (Array.isArray(parsed.actions)) {
+        return parsed.actions;
+      }
+
+      return [];
+    } catch (err) {
+      console.error("JSON parse error:", err);
+      return [];
+    }
+  }
   return (
     <>
       {loading ? (
@@ -274,6 +294,14 @@ export default function Highlight() {
                       </div>
 
                       <div className="flex items-center gap-3">
+                        <div>
+                          <span className="text-xs text-muted-foreground">
+                            Created:{" "}
+                            {formatDistanceToNowStrict(new Date(item.created), {
+                              addSuffix: true,
+                            })}
+                          </span>
+                        </div>
                         {/* STATUS */}
                         <span
                           className={`text-xs px-2 py-1 rounded ${statusColor[item.status]}`}
@@ -298,9 +326,10 @@ export default function Highlight() {
                         isOpen ? "max-h-40 p-3" : "max-h-0 px-3"
                       } overflow-hidden`}
                     >
-                      {/* <div className="text-sm text-muted-foreground">
-                  {item.follow_up || "No details"}
-                </div> */}
+                      <ActionList
+                        itemId={item.id}
+                        initialList={parseFollowUp(item.follow_up)}
+                      />
                     </div>
                   </div>
                 );
