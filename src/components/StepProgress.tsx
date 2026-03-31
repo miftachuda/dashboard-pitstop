@@ -1,4 +1,9 @@
-import { StepTask, Priority, EquipmentType } from "@/types/maintenance";
+import {
+  typeClasses,
+  StepTask,
+  Priority,
+  EquipmentType,
+} from "@/types/maintenance";
 import { Check, Circle, Hourglass } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import DateRange from "./DateRange";
@@ -27,18 +32,6 @@ const priorityClasses: Record<Priority, string> = {
   medium: "bg-accent/20 text-accent-foreground",
   high: "bg-warning/20 text-warning-foreground",
   critical: "bg-destructive/15 text-destructive",
-};
-const typeClasses: Record<EquipmentType, string> = {
-  "Heat Exchanger": "bg-blue-100 text-blue-800",
-  Piping: "bg-green-100 text-green-800",
-  Furnace: "bg-orange-100 text-orange-800",
-  Column: "bg-yellow-100 text-yellow-800",
-  Vessel: "bg-purple-100 text-purple-800",
-  Pump: "bg-red-100 text-red-800",
-  Compressor: "bg-indigo-100 text-indigo-800",
-  "Jet Ejector": "bg-teal-100 text-teal-800",
-  Strainer: "bg-gray-100 text-gray-800",
-  Other: "bg-secondary text-secondary-foreground",
 };
 
 const priorityLabels: Record<Priority, string> = {
@@ -84,7 +77,6 @@ export function StepProgress({
 
   const toggleStep = (stepId: string) => {
     setOpenSteps((prev) => ({
-      ...prev,
       [stepId]: !prev[stepId],
     }));
   };
@@ -265,11 +257,11 @@ export function StepProgress({
       <div className="flex items-start justify-between mb-1">
         <div className="flex flex-row gap-4">
           <div className="flex flex-row items-center">
-            <h3 className="font-display font-semibold text-base text-card-foreground">
+            <h3 className="font-display font-semibold  select-none text-base text-card-foreground">
               {task.title}
               <span className="mx-1">•</span>
             </h3>
-            <div className="text-[9px] text-muted-foreground">
+            <div className="text-[9px] text-muted-foreground select-none">
               last modified:{" "}
               <span className="text-[9px] text-muted-foreground italic">
                 {formatDistanceToNow(new Date(task.lastmodified), {
@@ -279,7 +271,7 @@ export function StepProgress({
             </div>
           </div>
           <span
-            className={`text-xs font-semibold px-2 py-1 rounded-md uppercase tracking-wider ${typeClasses[task.type]}`}
+            className={`text-xs select-none font-semibold px-2 py-1 rounded-md uppercase tracking-wider ${typeClasses[task.type]}`}
           >
             {typeLabels[task.type]}
           </span>
@@ -293,7 +285,7 @@ export function StepProgress({
         <button
           onClick={() => onSave(task.id)}
           disabled={!state.isDirty || state.isSaving}
-          className={`text-[10px] font-mono px-2 py-1 rounded-md transition
+          className={`text-[10px] font-mono px-2 py-1 select-none rounded-md transition
     ${
       state.isSaved
         ? "bg-green-500/10 text-green-400"
@@ -316,7 +308,7 @@ export function StepProgress({
           {task.equipment}
         </p>
         <div className="flex justify-between items-center mb-1">
-          <span className="text-xs font-medium text-muted-foreground">
+          <span className="text-xs font-medium select-none text-muted-foreground">
             Progress
           </span>
           <span
@@ -389,10 +381,10 @@ export function StepProgress({
                     >
                       {/* Status indicator */}
 
-                      <div className="flex flex-col w-full">
+                      <div className="flex flex-col w-full ">
                         <div className="flex items-center">
                           <p
-                            className={`text-xs text-wrap font-medium truncate ${
+                            className={`text-xs select-none text-wrap font-medium truncate ${
                               item.status === "completed"
                                 ? "text-card-foreground"
                                 : "text-muted-foreground"
@@ -418,7 +410,7 @@ export function StepProgress({
                         </div>
                         <div>
                           <div className="flex items-center w-full gap-3 px-2 rounded-md ">
-                            <button
+                            <div
                               className={`flex-shrink-0 min-w-[80px] text-center whitespace-nowrap
     text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md
     ${item.status === "completed" ? "bg-success/10 text-success" : ""}
@@ -427,10 +419,10 @@ export function StepProgress({
   `}
                             >
                               {item.status}
-                            </button>
+                            </div>
 
                             <div className="flex flex-col items-end gap-1">
-                              <div className="flex items-center gap-2 mt-1">
+                              <div className="flex select-none items-center gap-2 mt-1">
                                 <DateRange
                                   item={item}
                                   taskId={task.id}

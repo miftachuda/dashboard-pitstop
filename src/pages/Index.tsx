@@ -12,12 +12,15 @@ import { pb } from "@/lib/pocketbase";
 import { Toaster } from "react-hot-toast";
 import { toast } from "sonner";
 import { StatsBar2 } from "@/components/StatsBar2";
+import Highlight from "@/components/Highlight";
+import { HighlightItem } from "@/components/Highlight";
 
 const Index = () => {
   const [tasks, setTasks] = useState<StepTask[]>([]);
   const [search, setSearch] = useState("");
   const [prefixFilter, setPrefixFilter] = useState<string | null>(null);
   const [selectedType, setselectedType] = useState<string | null>(null);
+
   const [loading, setLoading] = useState(true);
   const cycleStatus = (current: StepStatus): StepStatus => {
     if (current === "not yet") return "in-progress";
@@ -95,40 +98,7 @@ const Index = () => {
       console.error("Failed to sync with PocketBase", err);
     }
   };
-  function recordToStepTask(r: any): StepTask {
-    let steps: StepGroup[] = [];
 
-    try {
-      steps = typeof r.steps === "string" ? JSON.parse(r.steps) : r.steps;
-    } catch {
-      steps = [];
-    }
-
-    return {
-      id: r.id,
-      title: r.title ?? "",
-      equipment: r.equipment ?? "",
-      type: r.type ?? "",
-      dicipline: r.dicipline ?? "",
-      priority: r.priority ?? "low",
-      assignee: r.assignee ?? "",
-      lastmodified: r.updated ?? Date.now(),
-      steps,
-    };
-  }
-  useEffect(() => {
-    async function load() {
-      const records = await pb
-        .collection("pitstop")
-        .getFullList({ sort: "title" });
-
-      const fetchedtasks: StepTask[] = records.map(recordToStepTask);
-      setTasks(fetchedtasks);
-      setLoading(false);
-    }
-
-    load();
-  }, []);
   const [taskStates, setTaskStates] = useState<{
     [taskId: string]: {
       isDirty: boolean;
@@ -163,6 +133,43 @@ const Index = () => {
       toast.error("Failed to save changes");
     }
   };
+  function recordToStepTask(r: any): StepTask {
+    let steps: StepGroup[] = [];
+
+    try {
+      steps = typeof r.steps === "string" ? JSON.parse(r.steps) : r.steps;
+    } catch {
+      steps = [];
+    }
+
+    return {
+      id: r.id,
+      title: r.title ?? "",
+      equipment: r.equipment ?? "",
+      type: r.type ?? "",
+      dicipline: r.dicipline ?? "",
+      priority: r.priority ?? "low",
+      assignee: r.assignee ?? "",
+      lastmodified: r.updated ?? Date.now(),
+      steps,
+    };
+  }
+  useEffect(() => {
+    async function loadTasks() {
+      try {
+        const pitstopRecords = await pb.collection("pitstop").getFullList({
+          sort: "title",
+        });
+        const fetchedTasks: StepTask[] = pitstopRecords.map(recordToStepTask);
+        setTasks(fetchedTasks);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadTasks();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -194,6 +201,7 @@ const Index = () => {
           <div className="flex flex-col gap-0">
             <StatsBar tasks={tasks} />
             <StatsBar2 tasks={tasks} />
+            <Highlight />
           </div>
         )}
 
@@ -255,18 +263,24 @@ const Index = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary"></div>
           </div>
         ) : (
-          <div className="grid items-start grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-5">
-            {filteredTasks.map((task) => (
-              <StepProgress
-                key={task.id}
-                task={task}
-                onStepToggle={handleStepToggle}
-                setTasks={setTasks}
-                state={taskStates[task.id] || {}}
-                updateTaskState={updateTaskState}
-                onSave={handleSave}
-              />
-            ))}
+          <div>
+            <div>
+              {filteredTasks.length} Equipment{""}
+              {filteredTasks.length !== 1 && "s"} found
+            </div>
+            <div className="grid items-start grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-5">
+              {filteredTasks.map((task) => (
+                <StepProgress
+                  key={task.id}
+                  task={task}
+                  onStepToggle={handleStepToggle}
+                  setTasks={setTasks}
+                  state={taskStates[task.id] || {}}
+                  updateTaskState={updateTaskState}
+                  onSave={handleSave}
+                />
+              ))}
+            </div>
           </div>
         )}
       </main>

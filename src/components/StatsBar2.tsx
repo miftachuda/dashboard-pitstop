@@ -1,4 +1,4 @@
-import { EquipmentType, StepTask } from "@/types/maintenance";
+import { typeColors, EquipmentType, StepTask } from "@/types/maintenance";
 
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -8,25 +8,12 @@ interface StatsBar2Props {
 function hexToRgb(hex: string) {
   const clean = hex.replace("#", "");
   const bigint = parseInt(clean, 16);
-
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
 
   return `${r}, ${g}, ${b}`;
 }
-const typeColors: Record<EquipmentType, string> = {
-  "Heat Exchanger": "#3b82f6",
-  Piping: "#10b981",
-  Furnace: "#ef4444",
-  Column: "#f59e0b",
-  Vessel: "#8b5cf6",
-  Pump: "#06b6d4",
-  Compressor: "#ec4899",
-  "Jet Ejector": "#84cc16",
-  Strainer: "#f97316",
-  Other: "#6b7280",
-};
 
 export const equipmentTypes: EquipmentType[] = [
   "Heat Exchanger",
@@ -67,10 +54,8 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
     const filtered = filterTasksByType(tasks, type);
     return calculateTaskProgress(filtered);
   };
-  const heatExchangerProgress = getProgressByType(tasks, "Heat Exchanger");
-
   return (
-    <div className="grid grid-flow-col gap-4 mb-8">
+    <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
       {equipmentTypes.map((eTypes) => {
         const progress = getProgressByType(tasks, eTypes);
 
