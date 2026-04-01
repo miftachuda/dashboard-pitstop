@@ -2,53 +2,65 @@ import { useState } from "react";
 import { Pencil, Plus, Check } from "lucide-react";
 import { pb } from "@/lib/pocketbase";
 import { toast } from "sonner";
+import { ActionItem } from "./Highlight";
+import { formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
 export default function ActionList({
   itemId,
   initialList,
 }: {
   itemId: string;
-  initialList: string[];
+  initialList: ActionItem[];
 }) {
-  const [list, setList] = useState<string[]>(initialList || []);
+  const [list, setList] = useState<ActionItem[]>(initialList || []);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [tempValue, setTempValue] = useState("");
-  const [actions, setActions] = useState<string[]>([]); // list
+
   const [newAction, setNewAction] = useState<string>("");
-  const handleSave = async (newList: string[]) => {
+  const handleSave = async (newList: ActionItem[]) => {
     setList(newList);
 
     try {
-      await pb.collection("maintenance_steps").update(itemId, {
-        follow_up: JSON.stringify(newList),
+      await pb.collection("highlight_pitstop").update(itemId, {
+        follow_up: {
+          actions: newList, // no stringify needed if JSON field
+        },
       });
       toast.success("Follow-up actions updated");
     } catch (err) {
       toast.error("Failed to update follow-up actions");
     }
   };
-
   const handleEdit = (index: number) => {
     setEditingIndex(index);
-    setTempValue(list[index]);
+    setTempValue(list[index].action);
   };
 
   const handleUpdate = async () => {
     if (editingIndex === null) return;
 
     const newList = [...list];
-    newList[editingIndex] = tempValue;
+    newList[editingIndex] = {
+      ...newList[editingIndex],
+      action: tempValue, // keep timestamp
+    };
 
     setEditingIndex(null);
     await handleSave(newList);
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!newAction.trim()) return;
 
-    setActions((prev) => [...prev, newAction.trim()]); // ✅ correct
-    setNewAction(""); // reset input
-  };
+    const newItem: ActionItem = {
+      action: newAction.trim(),
+      createdAt: new Date().toISOString(),
+    };
 
+    const newList = [...list, newItem];
+
+    setNewAction("");
+    await handleSave(newList);
+  };
   return (
     <div className="space-y-2">
       {list.map((item, index) => (
@@ -63,7 +75,18 @@ export default function ActionList({
               className="border px-2 py-0 text-[12px] w-full"
             />
           ) : (
-            <span className="text-[12px]">{item}</span>
+            <div className="flex flex-col w-full">
+              <span className="text-[12px]">{item.action}</span>
+              <span className="text-[10px] text-gray-400">
+                {item.createdAt && (
+                  <span className="text-[10px] text-gray-400">
+                    {formatDistanceToNowStrict(new Date(item.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </span>
+                )}
+              </span>
+            </div>
           )}
 
           <div className="flex gap-1">

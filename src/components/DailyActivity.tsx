@@ -3,15 +3,13 @@ import { ChevronDown, Loader2 } from "lucide-react";
 import {
   EquipmentType,
   equipmentTypes,
-  StepGroup,
   StepTask,
   typeClasses,
-  typeColors,
 } from "@/types/maintenance";
 import { pb } from "@/lib/pocketbase";
 import DeleteWithConfirm from "./Deletion";
 import { toast } from "sonner";
-import { formatDistanceToNow, formatDistanceToNowStrict, set } from "date-fns";
+import { formatDistanceToNowStrict } from "date-fns";
 import ActionList from "./ActionList";
 import StatusPopup from "./StatusPopup";
 
@@ -38,7 +36,7 @@ const statusColor: Record<HighlightItem["status"], string> = {
   done: "bg-green-100 text-green-700",
 };
 
-export default function Highlight() {
+export default function DailyActivity() {
   const [highlights, setHighlights] = useState<HighlightItem[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -77,8 +75,6 @@ export default function Highlight() {
       // add fields as needed
     };
   }
-
-  const [tasks, setTasks] = useState<StepTask[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function loadHighlights() {
@@ -177,13 +173,13 @@ export default function Highlight() {
           <div className="flex flex-col gap-1">
             <div className="flex flex-row items-center gap-3 ">
               <h2 className="text-lg font-semibold  border-emerald-300">
-                Highlights
+                Daily Activity
               </h2>
               <button
                 onClick={() => setIsOpen(true)}
                 className="bg-indigo-500 text-primary-foreground hover:bg-indigo-500/80 px-3 py-1 rounded text-sm"
               >
-                + Add Highlight
+                + Create Daily Activity
               </button>
               {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">

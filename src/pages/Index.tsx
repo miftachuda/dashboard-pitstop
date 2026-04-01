@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { StatsBar2 } from "@/components/StatsBar2";
 import Highlight from "@/components/Highlight";
 import { HighlightItem } from "@/components/Highlight";
+import { set } from "date-fns";
 
 const Index = () => {
   const [tasks, setTasks] = useState<StepTask[]>([]);
@@ -154,23 +155,64 @@ const Index = () => {
       steps,
     };
   }
-  useEffect(() => {
-    async function loadTasks() {
-      try {
-        const pitstopRecords = await pb.collection("pitstop").getFullList({
-          sort: "title",
-        });
-        const fetchedTasks: StepTask[] = pitstopRecords.map(recordToStepTask);
-        setTasks(fetchedTasks);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+  async function loadTasks() {
+    try {
+      const pitstopRecords = await pb.collection("pitstop").getFullList({
+        sort: "title",
+      });
+      const fetchedTasks: StepTask[] = pitstopRecords.map(recordToStepTask);
+      setTasks(fetchedTasks);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
+  }
+  useEffect(() => {
     loadTasks();
   }, []);
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [now, setNow] = useState<Date>(new Date());
 
+  // function to refresh data
+  const refreshData = async () => {
+    try {
+      console.log("refreshing data...");
+
+      window.location.reload(); // reload page
+      setLastRefresh(new Date());
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  // auto refresh every 3 minutes
+  useEffect(() => {
+    const interval = setInterval(
+      () => {
+        refreshData();
+      },
+      5 * 60 * 1000,
+    ); // 3 minutes
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // update "time ago" every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const getTimeAgo = () => {
+    const diff = Math.floor((now.getTime() - lastRefresh.getTime()) / 1000);
+
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    return `${Math.floor(diff / 3600)}h ago`;
+  };
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -188,6 +230,9 @@ const Index = () => {
               Restoring Performance Strengthening Reliability
             </p>
           </div>
+          <p className="text-[10px] text-muted-foreground font-mono mt-1">
+            Last refresh: {getTimeAgo()}
+          </p>
         </div>
       </header>
 
