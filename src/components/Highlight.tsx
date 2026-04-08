@@ -16,6 +16,7 @@ import ActionList from "./ActionList";
 import StatusPopup from "./StatusPopup";
 import MultiImageUpload from "./MultiImageUpload";
 import ImagePreviewRow from "./ImagePreview";
+import EditableHighlight from "./EditableHighlight";
 
 export type ActionItem = {
   action: string;
@@ -77,18 +78,14 @@ export default function Highlight() {
       created: record.created,
       updated: record.updated,
       date_closed: record.date_closed,
-      photos: record.photo || [],
+      photos: record.photos || [],
       // add fields as needed
     };
   }
 
-  const [tasks, setTasks] = useState<StepTask[]>([]);
-
   const [loading, setLoading] = useState(true);
   const [photos, setPhotos] = useState<File[]>([]);
-  const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
-
   const handlePhotosChange = (files: File[]) => {
     setPhotos(files);
   };
@@ -103,12 +100,17 @@ export default function Highlight() {
     });
 
     try {
-      await pb.collection("pitstop").update(taskId, formData);
+      await pb.collection("highlight_pitstop").update(taskId, formData);
 
-      const updated = await pb.collection("pitstop").getOne(taskId);
+      const updated = await pb.collection("highlight_pitstop").getOne(taskId);
 
-      // ✅ update server images preview
-      setImages(updated.photos || []);
+      setHighlights((prev) =>
+        prev.map((item) =>
+          item.id === updated.id
+            ? { ...item, photos: updated.photos || [] }
+            : item,
+        ),
+      );
 
       // 🔥 CLEAR LOCAL PREVIEW
       setPhotos([]);
@@ -170,7 +172,6 @@ export default function Highlight() {
       setHighlight("");
       setType_equipment(equipmentTypes[0]);
       setStatus("open");
-      setImages([]);
 
       toast.custom(() => (
         <div className="flex items-center gap-3 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg">
@@ -218,6 +219,13 @@ export default function Highlight() {
     } catch (err) {
       toast.error("Failed to update status");
     }
+  };
+  const handleHighlightUpdate = (id: string, newValue: string) => {
+    setHighlights((prev) =>
+      prev.map((h) =>
+        h.id === id ? { ...h, highlight: newValue, updated: Date.now() } : h,
+      ),
+    );
   };
   return (
     <>
@@ -371,14 +379,16 @@ export default function Highlight() {
                         </span>
 
                         {/* TITLE */}
-                        <span className="font-medium text-xs">
-                          {item.highlight}
-                        </span>
+                        <EditableHighlight
+                          item={item}
+                          pb={pb}
+                          onUpdated={handleHighlightUpdate}
+                        />
                       </div>
 
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 shrink-0 pl-6">
                         <div>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-muted-foreground ">
                             Created:{" "}
                             {formatDistanceToNowStrict(new Date(item.created), {
                               addSuffix: true,

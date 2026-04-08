@@ -54,13 +54,12 @@ export default function ImagePreviewRow({
         )}
       </div>
 
-      {/* MODAL */}
       {selectedIndex !== null && (
         <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
           onClick={() => setSelectedIndex(null)}
         >
-          {/* PREV BUTTON */}
+          {/* PREV */}
           <button
             onClick={prev}
             className="absolute left-4 text-white text-3xl px-3 py-2 bg-black/40 rounded-full hover:bg-black/70"
@@ -75,7 +74,7 @@ export default function ImagePreviewRow({
             onClick={(e) => e.stopPropagation()}
           />
 
-          {/* NEXT BUTTON */}
+          {/* NEXT */}
           <button
             onClick={next}
             className="absolute right-4 text-white text-3xl px-3 py-2 bg-black/40 rounded-full hover:bg-black/70"
@@ -83,7 +82,7 @@ export default function ImagePreviewRow({
             →
           </button>
 
-          {/* CLOSE BUTTON */}
+          {/* CLOSE */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -93,6 +92,11 @@ export default function ImagePreviewRow({
           >
             ✕
           </button>
+
+          {/* 🔥 IMAGE NUMBER */}
+          <div className="absolute bottom-4 text-white text-sm bg-black/50 px-4 py-1 rounded-full">
+            {selectedIndex + 1} / {images.length}
+          </div>
         </div>
       )}
     </>
