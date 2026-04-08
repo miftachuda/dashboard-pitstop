@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type ImageItem = {
   file: File;
@@ -8,50 +8,60 @@ type ImageItem = {
 type Props = {
   onChange?: (files: File[], taskId: string) => void;
   taskId?: string;
+  uploadedTrigger: number; // 👈 add this
 };
 
 const MAX_SIZE_MB = 1;
 const MAX_WIDTH = 1024;
 const QUALITY = 0.7;
 
-export default function MultiImageUpload({ onChange, taskId }: Props) {
+export default function MultiImageUpload({
+  onChange,
+  taskId,
+  uploadedTrigger,
+}: Props) {
   const [images, setImages] = useState<ImageItem[]>([]);
+  useEffect(() => {
+    setImages([]); // clear preview after upload
+  }, [uploadedTrigger]);
+  // ✅ notify parent
+  useEffect(() => {
+    if (!onChange) return;
+
+    onChange(
+      images.map((i) => i.file),
+      taskId || "",
+    );
+  }, [images]);
+
+  // ✅ cleanup memory (IMPORTANT)
+  useEffect(() => {
+    return () => {
+      images.forEach((img) => URL.revokeObjectURL(img.preview));
+    };
+  }, [images]);
 
   const handleFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
 
-    const processed: (ImageItem | null)[] = await Promise.all(
-      files.map(async (file: File) => {
-        if (!file.type.startsWith("image/")) return null;
+    const processed: ImageItem[] = [];
 
-        let finalFile: File = file;
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) continue;
 
-        if (file.size / 1024 / 1024 > MAX_SIZE_MB) {
-          finalFile = await compressImage(file);
-        }
+      let finalFile = file;
 
-        return {
-          file: finalFile,
-          preview: URL.createObjectURL(finalFile),
-        };
-      }),
-    );
+      if (file.size / 1024 / 1024 > MAX_SIZE_MB) {
+        finalFile = await compressImage(file);
+      }
 
-    const validImages = processed.filter(
-      (img): img is ImageItem => img !== null,
-    );
+      processed.push({
+        file: finalFile,
+        preview: URL.createObjectURL(finalFile),
+      });
+    }
 
-    setImages((prev) => {
-      const updated = [...prev, ...validImages];
-
-      // 🔥 SEND TO PARENT
-      onChange?.(
-        updated.map((i) => i.file),
-        taskId,
-      );
-
-      return updated;
-    });
+    setImages((prev) => [...prev, ...processed]);
 
     e.target.value = "";
   };
@@ -63,16 +73,14 @@ export default function MultiImageUpload({ onChange, taskId }: Props) {
 
       reader.onload = (e) => {
         const result = e.target?.result;
-        if (typeof result === "string") {
-          img.src = result;
-        }
+        if (typeof result === "string") img.src = result;
       };
 
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        const scale = MAX_WIDTH / img.width;
 
-        canvas.width = MAX_WIDTH;
+        const scale = Math.min(1, MAX_WIDTH / img.width);
+        canvas.width = img.width * scale;
         canvas.height = img.height * scale;
 
         const ctx = canvas.getContext("2d");
@@ -106,42 +114,36 @@ export default function MultiImageUpload({ onChange, taskId }: Props) {
       URL.revokeObjectURL(updated[index].preview);
       updated.splice(index, 1);
 
-      // 🔥 UPDATE PARENT AFTER REMOVE
-      onChange?.(
-        updated.map((i) => i.file),
-        taskId,
-      );
-
       return updated;
     });
   };
 
   return (
-    <div className="p-4 border rounded w-full max-w-lg">
+    <div className="w-full">
       <input
         type="file"
         multiple
         accept="image/*"
         onChange={handleFiles}
-        className="mb-4"
+        className="mb-3"
       />
 
       {images.length === 0 && (
-        <p className="text-sm text-gray-500">No images selected</p>
+        <p className="text-xs text-gray-500">No new images</p>
       )}
 
-      <div className="grid grid-cols-3 gap-3">
+      {/* 🔥 horizontal preview */}
+      <div className="flex gap-2 overflow-x-auto pb-2">
         {images.map((img, index) => (
-          <div key={index} className="relative">
+          <div key={index} className="relative flex-shrink-0">
             <img
               src={img.preview}
-              alt="preview"
-              className="w-full h-32 object-cover rounded border"
+              className="w-20 h-20 object-cover rounded border"
             />
 
             <button
               onClick={() => removeImage(index)}
-              className="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded"
+              className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded"
             >
               ✕
             </button>

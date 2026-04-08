@@ -143,6 +143,12 @@ const MainPage = () => {
       steps = [];
     }
 
+    const photos = !r.photos
+      ? []
+      : Array.isArray(r.photos)
+        ? r.photos
+        : [r.photos]; // <-- fix here
+
     return {
       id: r.id,
       title: r.title ?? "",
@@ -153,7 +159,7 @@ const MainPage = () => {
       assignee: r.assignee ?? "",
       lastmodified: r.updated ?? Date.now(),
       steps,
-      photos: r.photos ?? [],
+      photos,
     };
   }
   async function loadTasks() {

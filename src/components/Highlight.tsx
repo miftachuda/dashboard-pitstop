@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { formatDistanceToNow, formatDistanceToNowStrict, set } from "date-fns";
 import ActionList from "./ActionList";
 import StatusPopup from "./StatusPopup";
-import MultiImageUpload from "./InputImage";
+import MultiImageUpload from "./MultiImageUpload";
 import ImagePreviewRow from "./ImagePreview";
 
 export type ActionItem = {
@@ -83,9 +83,47 @@ export default function Highlight() {
   }
 
   const [tasks, setTasks] = useState<StepTask[]>([]);
-  const [images, setImages] = useState<File[]>([]);
-  const [loading, setLoading] = useState(true);
 
+  const [loading, setLoading] = useState(true);
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [images, setImages] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  const handlePhotosChange = (files: File[]) => {
+    setPhotos(files);
+  };
+  const handleUpload = async (taskId: string) => {
+    if (!photos || photos.length === 0) return;
+
+    setUploading(true);
+
+    const formData = new FormData();
+    photos.forEach((file) => {
+      formData.append("photos+", file);
+    });
+
+    try {
+      await pb.collection("pitstop").update(taskId, formData);
+
+      const updated = await pb.collection("pitstop").getOne(taskId);
+
+      // ✅ update server images preview
+      setImages(updated.photos || []);
+
+      // 🔥 CLEAR LOCAL PREVIEW
+      setPhotos([]);
+
+      // 🔁 force reset uploader (if needed)
+      setUploadDoneKey((prev) => prev + 1);
+
+      toast.success("Photos uploaded");
+    } catch (err) {
+      console.error(err);
+      toast.error("Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
   async function loadHighlights() {
     try {
       const [highlightRecords] = await Promise.all([
@@ -121,7 +159,7 @@ export default function Highlight() {
       formData.append("status", status);
 
       // 🔥 multiple images
-      images.forEach((file: File) => {
+      photos.forEach((file: File) => {
         formData.append("photo", file); // Must match PocketBase field name
       });
       await pb.collection("highlight_pitstop").create(formData);
@@ -163,6 +201,7 @@ export default function Highlight() {
       return [];
     }
   }
+  const [uploadDoneKey, setUploadDoneKey] = useState(0);
   const handleStatusChange = async (id: string, newStatus: Status) => {
     try {
       // update local state
@@ -225,7 +264,10 @@ export default function Highlight() {
                           onChange={(e) => setHighlight(e.target.value)}
                         />
                       </div>
-                      <MultiImageUpload onChange={setImages} />
+                      <MultiImageUpload
+                        onChange={setPhotos}
+                        uploadedTrigger={uploadDoneKey}
+                      />
                       {/* Type Equipment */}
                       <div className="flex flex-col gap-1">
                         <label className="text-sm font-medium">
@@ -364,7 +406,7 @@ export default function Highlight() {
                     {/* COLLAPSIBLE CONTENT */}
                     <div
                       className={`transition-all duration-300 ${
-                        isOpen ? "max-h-40 p-3" : "max-h-0 px-3"
+                        isOpen ? " p-3" : "max-h-0 px-3"
                       } overflow-hidden`}
                     >
                       <div
@@ -375,7 +417,47 @@ export default function Highlight() {
                           images={item.photos}
                           recordId={item.id}
                           baseUrl={baseUrl}
+                          collectionID="highlight_pitstop"
                         />
+                        <MultiImageUpload
+                          onChange={handlePhotosChange}
+                          taskId={item.id}
+                          uploadedTrigger={uploadDoneKey}
+                        />
+                        <button
+                          onClick={() => handleUpload(item.id)}
+                          disabled={uploading}
+                          className={`mt-2 px-3 py-1 max-w-xsrounded text-white flex items-center gap-2 ${
+                            uploading
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-blue-500 hover:bg-blue-600"
+                          }`}
+                        >
+                          {uploading && (
+                            <svg
+                              className="animate-spin h-4 w-4 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8H4z"
+                              />
+                            </svg>
+                          )}
+
+                          {uploading ? "Uploading..." : "Upload"}
+                        </button>
                         <ActionList
                           itemId={item.id}
                           initialList={parseFollowUp(item.follow_up)}

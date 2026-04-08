@@ -13,7 +13,7 @@ import ProgressSlider from "./ProgressSlider";
 import AutoResizeTextarea from "./TextArea";
 import { baseUrl, pb } from "@/lib/pocketbase";
 import { toast } from "react-hot-toast";
-import MultiImageUpload from "./InputImage";
+import MultiImageUpload from "./MultiImageUpload";
 import { Collapsible } from "./Collapsible";
 import ImagePreviewRow from "./ImagePreview";
 
@@ -243,31 +243,7 @@ export function StepProgress({
       [taskId]: files,
     }));
   };
-  const handleUpload = async (taskId: string) => {
-    const files = photosMap[taskId];
 
-    if (!files || files.length === 0) return;
-
-    const formData = new FormData();
-
-    files.forEach((file) => {
-      formData.append("photos", file); // 🔥 IMPORTANT (append, not replace)
-    });
-
-    try {
-      await pb.collection("pitstop").update(taskId, formData);
-
-      toast.success("Photos uploaded");
-
-      // clear state after upload
-      setPhotosMap((prev) => ({
-        ...prev,
-        [taskId]: [],
-      }));
-    } catch (err) {
-      console.error("Upload failed:", err);
-    }
-  };
   const handleSave = async () => {
     setEditing(false);
 
@@ -283,6 +259,45 @@ export function StepProgress({
       toast.success("PIC updated");
     } catch (err) {
       toast.error(err.message || "Failed to update PIC");
+    }
+  };
+  const [uploadingMap, setUploadingMap] = useState<Record<string, boolean>>({});
+  const [imagesMap, setImagesMap] = useState<Record<string, string[]>>({});
+  const [uploadDoneKey, setUploadDoneKey] = useState(0);
+  const handleUpload = async (taskId: string) => {
+    const files = photosMap[taskId];
+    if (!files || files.length === 0) return;
+
+    setUploadingMap((prev) => ({ ...prev, [taskId]: true }));
+
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append("photos+", file);
+    });
+
+    try {
+      await pb.collection("pitstop").update(taskId, formData);
+
+      const updated = await pb.collection("pitstop").getOne(taskId);
+
+      // ✅ update server images preview
+      setImagesMap((prev) => ({
+        ...prev,
+        [taskId]: updated.photos || [],
+      }));
+
+      // 🔥 CLEAR LOCAL PREVIEW
+      setPhotosMap((prev) => ({
+        ...prev,
+        [taskId]: [],
+      }));
+      setUploadDoneKey((prev) => prev + 1);
+      toast.success("Photos uploaded");
+    } catch (err) {
+      console.error(err);
+      toast.error("Upload failed");
+    } finally {
+      setUploadingMap((prev) => ({ ...prev, [taskId]: false }));
     }
   };
   return (
@@ -509,16 +524,50 @@ export function StepProgress({
       </div>
       <Collapsible title="Photo Evidence">
         <ImagePreviewRow
-          images={task.photos}
+          images={imagesMap[task.id] || task.photos || []}
           recordId={task.id}
           baseUrl={baseUrl}
+          collectionID="pitstop"
         />
-        <MultiImageUpload onChange={handlePhotosChange} taskId={task.id} />
+        <MultiImageUpload
+          onChange={handlePhotosChange}
+          taskId={task.id}
+          uploadedTrigger={uploadDoneKey}
+        />
+
         <button
           onClick={() => handleUpload(task.id)}
-          className="mt-2 px-3 py-1 bg-blue-500 text-white rounded"
+          disabled={uploadingMap[task.id]}
+          className={`mt-2 px-3 py-1 rounded text-white flex items-center gap-2 ${
+            uploadingMap[task.id]
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
+          }`}
         >
-          Upload
+          {uploadingMap[task.id] && (
+            <svg
+              className="animate-spin h-4 w-4 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8H4z"
+              />
+            </svg>
+          )}
+
+          {uploadingMap[task.id] ? "Uploading..." : "Upload"}
         </button>
       </Collapsible>
     </div>
