@@ -13,33 +13,29 @@ export default function ImagePreviewRow({
   baseUrl,
   collectionID,
 }: Props) {
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const getImageUrl = (filename: string) => {
     return `${baseUrl}/api/files/${collectionID}/${recordId}/${filename}`;
   };
 
+  const next = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (selectedIndex === null) return;
+    setSelectedIndex((prev) => (prev! === images.length - 1 ? 0 : prev! + 1));
+  };
+
+  const prev = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (selectedIndex === null) return;
+    setSelectedIndex((prev) => (prev! === 0 ? images.length - 1 : prev! - 1));
+  };
+
   return (
     <>
-      <div className="flex gap-2 overflow-x-auto p-2 border rounded min-h-[88px] items-center ">
+      <div className="flex gap-2 overflow-x-auto p-2 border rounded min-h-[88px] items-center">
         {images.length === 0 ? (
           <div className="flex flex-col items-center text-gray-400 text-sm">
-            {/* ICON */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-8 h-8 mb-1 opacity-70"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 16.5V6a2 2 0 012-2h14a2 2 0 012 2v10.5M3 16.5l4.5-4.5a2 2 0 012.828 0L15 16.5M3 16.5h18M15 10.5h.01"
-              />
-            </svg>
-
             <span>No image</span>
           </div>
         ) : (
@@ -50,7 +46,7 @@ export default function ImagePreviewRow({
               <img
                 key={i}
                 src={url}
-                onClick={() => setSelected(url)}
+                onClick={() => setSelectedIndex(i)}
                 className="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 shrink-0"
               />
             );
@@ -59,15 +55,44 @@ export default function ImagePreviewRow({
       </div>
 
       {/* MODAL */}
-      {selected && (
+      {selectedIndex !== null && (
         <div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-          onClick={() => setSelected(null)}
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          onClick={() => setSelectedIndex(null)}
         >
+          {/* PREV BUTTON */}
+          <button
+            onClick={prev}
+            className="absolute left-4 text-white text-3xl px-3 py-2 bg-black/40 rounded-full hover:bg-black/70"
+          >
+            ←
+          </button>
+
+          {/* IMAGE */}
           <img
-            src={selected}
+            src={getImageUrl(images[selectedIndex])}
             className="max-h-[90%] max-w-[90%] rounded shadow-lg"
+            onClick={(e) => e.stopPropagation()}
           />
+
+          {/* NEXT BUTTON */}
+          <button
+            onClick={next}
+            className="absolute right-4 text-white text-3xl px-3 py-2 bg-black/40 rounded-full hover:bg-black/70"
+          >
+            →
+          </button>
+
+          {/* CLOSE BUTTON */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedIndex(null);
+            }}
+            className="absolute top-4 right-4 text-white text-xl bg-black/40 px-3 py-1 rounded hover:bg-black/70"
+          >
+            ✕
+          </button>
         </div>
       )}
     </>
