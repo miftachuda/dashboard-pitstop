@@ -153,6 +153,7 @@ const MainPage = () => {
       assignee: r.assignee ?? "",
       lastmodified: r.updated ?? Date.now(),
       steps,
+      photos: r.photos ?? [],
     };
   }
   async function loadTasks() {
@@ -186,7 +187,6 @@ const MainPage = () => {
               <StatsBar tasks={tasks} />
               <StatsBar2 tasks={tasks} />
               <Highlight />
-              <DailyActivity />
             </div>
           )}
 

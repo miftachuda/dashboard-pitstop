@@ -8,12 +8,14 @@ import {
   typeClasses,
   typeColors,
 } from "@/types/maintenance";
-import { pb } from "@/lib/pocketbase";
+import { baseUrl, pb } from "@/lib/pocketbase";
 import DeleteWithConfirm from "./Deletion";
 import { toast } from "sonner";
 import { formatDistanceToNow, formatDistanceToNowStrict, set } from "date-fns";
 import ActionList from "./ActionList";
 import StatusPopup from "./StatusPopup";
+import MultiImageUpload from "./InputImage";
+import ImagePreviewRow from "./ImagePreview";
 
 export type ActionItem = {
   action: string;
@@ -29,6 +31,7 @@ export type HighlightItem = {
   created: number;
   updated?: number;
   date_closed?: number;
+  photos?: string[]; // array of image URLs
 };
 
 const statusColor: Record<HighlightItem["status"], string> = {
@@ -74,11 +77,13 @@ export default function Highlight() {
       created: record.created,
       updated: record.updated,
       date_closed: record.date_closed,
+      photos: record.photo || [],
       // add fields as needed
     };
   }
 
   const [tasks, setTasks] = useState<StepTask[]>([]);
+  const [images, setImages] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function loadHighlights() {
@@ -104,15 +109,22 @@ export default function Highlight() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (saving) return;
+    setSaving(true);
+
     try {
-      const data = {
-        highlight,
-        type_equipment,
-        status,
-      };
-      if (saving) return;
-      setSaving(true);
-      await pb.collection("highlight_pitstop").create(data);
+      const formData = new FormData();
+
+      // 🔹 text fields
+      formData.append("highlight", highlight);
+      formData.append("type_equipment", type_equipment);
+      formData.append("status", status);
+
+      // 🔥 multiple images
+      images.forEach((file: File) => {
+        formData.append("photo", file); // Must match PocketBase field name
+      });
+      await pb.collection("highlight_pitstop").create(formData);
 
       await loadHighlights();
 
@@ -120,7 +132,9 @@ export default function Highlight() {
       setHighlight("");
       setType_equipment(equipmentTypes[0]);
       setStatus("open");
-      toast.custom((t) => (
+      setImages([]);
+
+      toast.custom(() => (
         <div className="flex items-center gap-3 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg">
           <span>✅ Saved successfully</span>
         </div>
@@ -211,7 +225,7 @@ export default function Highlight() {
                           onChange={(e) => setHighlight(e.target.value)}
                         />
                       </div>
-
+                      <MultiImageUpload onChange={setImages} />
                       {/* Type Equipment */}
                       <div className="flex flex-col gap-1">
                         <label className="text-sm font-medium">
@@ -353,10 +367,20 @@ export default function Highlight() {
                         isOpen ? "max-h-40 p-3" : "max-h-0 px-3"
                       } overflow-hidden`}
                     >
-                      <ActionList
-                        itemId={item.id}
-                        initialList={parseFollowUp(item.follow_up)}
-                      />
+                      <div
+                        className="flex
+                      flex-col"
+                      >
+                        <ImagePreviewRow
+                          images={item.photos}
+                          recordId={item.id}
+                          baseUrl={baseUrl}
+                        />
+                        <ActionList
+                          itemId={item.id}
+                          initialList={parseFollowUp(item.follow_up)}
+                        />
+                      </div>
                     </div>
                   </div>
                 );

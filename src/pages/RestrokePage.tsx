@@ -134,87 +134,94 @@ const RestrokePage = () => {
     <DashboardLayout>
       <div className="min-h-screen bg-background">
         <main className="max-w-8xl  ">
-          <div className="p-1 overflow-auto">
+          <div className=" max-h-[600px] overflow-y-auto">
             <table className="min-w-full border text-sm">
-              <thead className="bg-gray-200 text-center p-4">
+              <thead className="text-center">
                 <tr>
                   <th
-                    className="text-center align-middle py-3 px-2"
+                    className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
                     rowSpan={2}
                   >
                     NO
                   </th>
                   <th
-                    className="text-center align-middle py-3 px-2"
+                    className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
                     rowSpan={2}
                   >
                     TAG NO.
                   </th>
                   <th
-                    className="text-center align-middle py-3 px-2"
+                    className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
                     rowSpan={2}
                   >
                     SERVICE
                   </th>
-                  <th colSpan={5}>RESTROKE</th>
+
                   <th
-                    className="text-center align-middle py-3 px-2"
+                    className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
+                    colSpan={5}
+                  >
+                    RESTROKE
+                  </th>
+
+                  <th
+                    className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
                     rowSpan={2}
                   >
                     ARAH
                   </th>
                   <th
-                    className="text-center align-middle py-3 px-2"
+                    className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
                     rowSpan={2}
                   >
                     BAUT
                   </th>
                   <th
-                    className="text-center align-middle py-3 px-2"
+                    className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
                     rowSpan={2}
                   >
                     GASKET
                   </th>
                   <th
-                    className="text-center align-middle py-3 px-2"
+                    className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
                     rowSpan={2}
                   >
                     KONEKSI
                   </th>
                   <th
-                    className="text-center align-middle py-3 px-2"
+                    className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
                     rowSpan={2}
                   >
                     SHIFT
                   </th>
                   <th
-                    className="text-center align-middle py-3 px-2"
+                    className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
                     rowSpan={2}
                   >
                     PIC
                   </th>
                   <th
-                    className="text-center align-middle py-3 px-2"
+                    className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
                     rowSpan={2}
                   >
                     KETERANGAN
                   </th>
                   <th
-                    className="text-center align-middle py-3 px-2"
+                    className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
                     rowSpan={2}
                   >
                     PROGRESS
                   </th>
                 </tr>
+
                 <tr>
-                  <th>0%</th>
-                  <th>25%</th>
-                  <th>50%</th>
-                  <th>75%</th>
-                  <th>100%</th>
+                  <th className="sticky top-[44px] z-10 bg-gray-200">0%</th>
+                  <th className="sticky top-[44px] z-10 bg-gray-200">25%</th>
+                  <th className="sticky top-[44px] z-10 bg-gray-200">50%</th>
+                  <th className="sticky top-[44px] z-10 bg-gray-200">75%</th>
+                  <th className="sticky top-[44px] z-10 bg-gray-200">100%</th>
                 </tr>
               </thead>
-
               <tbody>
                 {rows.map((row, i) => (
                   <tr key={i} className="text-center border text-nowrap">

@@ -74,4 +74,5 @@ export interface StepTask {
   assignee: string;
   lastmodified: number;
   steps: StepGroup[];
+  photos?: string[]; // tambahkan field untuk menyimpan nama file gambar
 }

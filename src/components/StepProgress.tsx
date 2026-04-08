@@ -7,12 +7,15 @@ import {
 import { Check, Circle, Hourglass } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import DateRange from "./DateRange";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, set } from "date-fns";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import ProgressSlider from "./ProgressSlider";
 import AutoResizeTextarea from "./TextArea";
-import { pb } from "@/lib/pocketbase";
+import { baseUrl, pb } from "@/lib/pocketbase";
 import { toast } from "react-hot-toast";
+import MultiImageUpload from "./InputImage";
+import { Collapsible } from "./Collapsible";
+import ImagePreviewRow from "./ImagePreview";
 
 interface StepProgressProps {
   task: StepTask;
@@ -233,7 +236,38 @@ export function StepProgress({
   };
   const [pic, setPic] = useState(task.assignee || "");
   const [editing, setEditing] = useState(false);
+  const [photosMap, setPhotosMap] = useState<Record<string, File[]>>({});
+  const handlePhotosChange = (files: File[], taskId: string) => {
+    setPhotosMap((prev) => ({
+      ...prev,
+      [taskId]: files,
+    }));
+  };
+  const handleUpload = async (taskId: string) => {
+    const files = photosMap[taskId];
 
+    if (!files || files.length === 0) return;
+
+    const formData = new FormData();
+
+    files.forEach((file) => {
+      formData.append("photos", file); // 🔥 IMPORTANT (append, not replace)
+    });
+
+    try {
+      await pb.collection("pitstop").update(taskId, formData);
+
+      toast.success("Photos uploaded");
+
+      // clear state after upload
+      setPhotosMap((prev) => ({
+        ...prev,
+        [taskId]: [],
+      }));
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
+  };
   const handleSave = async () => {
     setEditing(false);
 
@@ -473,6 +507,20 @@ export function StepProgress({
           </div>
         ))}
       </div>
+      <Collapsible title="Photo Evidence">
+        <ImagePreviewRow
+          images={task.photos}
+          recordId={task.id}
+          baseUrl={baseUrl}
+        />
+        <MultiImageUpload onChange={handlePhotosChange} taskId={task.id} />
+        <button
+          onClick={() => handleUpload(task.id)}
+          className="mt-2 px-3 py-1 bg-blue-500 text-white rounded"
+        >
+          Upload
+        </button>
+      </Collapsible>
     </div>
   );
 }

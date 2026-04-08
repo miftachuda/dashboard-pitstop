@@ -1,6 +1,8 @@
 // /lib/pocketbase.ts
 import PocketBase from "pocketbase";
 //console.log("PocketBase instance created");
-const pb = new PocketBase("https://base.miftachuda.my.id");
+const baseUrl = "https://base.miftachuda.my.id";
+const pb = new PocketBase(baseUrl);
 pb.autoCancellation(false);
 export { pb };
+export { baseUrl };
