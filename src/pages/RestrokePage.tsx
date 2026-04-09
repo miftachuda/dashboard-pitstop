@@ -210,7 +210,7 @@ const RestrokePage = () => {
                     className="sticky top-0 z-20 bg-gray-200 py-3 px-2"
                     rowSpan={2}
                   >
-                    PROGRESS
+                    Tindak Lanjut
                   </th>
                 </tr>
 

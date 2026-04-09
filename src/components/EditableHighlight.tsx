@@ -12,7 +12,6 @@ export default function EditableHighlight({ item, pb, onUpdated }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(item.highlight);
   const [saving, setSaving] = useState(false);
-
   const handleSave = async () => {
     if (value === item.highlight) {
       setIsEditing(false);
@@ -58,7 +57,7 @@ export default function EditableHighlight({ item, pb, onUpdated }: Props) {
           </div>
         </div>
       ) : (
-        <span className="font-medium text-xs flex-1 min-w-0 break-words">
+        <span className="font-medium text-sm flex-1 min-w-0 break-words">
           {item.highlight}
         </span>
       )}

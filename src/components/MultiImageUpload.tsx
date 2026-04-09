@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ImageUploader from "./UploadButton";
 
 type ImageItem = {
   file: File;
@@ -8,7 +9,7 @@ type ImageItem = {
 type Props = {
   onChange?: (files: File[], taskId: string) => void;
   taskId?: string;
-  uploadedTrigger: number; // 👈 add this
+  uploadedTrigger: number;
 };
 
 const MAX_SIZE_MB = 1;
@@ -21,10 +22,17 @@ export default function MultiImageUpload({
   uploadedTrigger,
 }: Props) {
   const [images, setImages] = useState<ImageItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Fix 1: Clear previews and revoke memory when upload completes
   useEffect(() => {
-    setImages([]); // clear preview after upload
+    if (images.length > 0) {
+      images.forEach((img) => URL.revokeObjectURL(img.preview));
+      setImages([]);
+    }
   }, [uploadedTrigger]);
-  // ✅ notify parent
+
+  // ✅ Fix 2: Notify parent when the image list changes
   useEffect(() => {
     if (!onChange) return;
 
@@ -32,38 +40,42 @@ export default function MultiImageUpload({
       images.map((i) => i.file),
       taskId || "",
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images]);
 
-  // ✅ cleanup memory (IMPORTANT)
-  useEffect(() => {
-    return () => {
-      images.forEach((img) => URL.revokeObjectURL(img.preview));
-    };
-  }, [images]);
+  // ✅ Fix 3: Component Unmount Cleanup
+  // This ensures that if the user leaves the page, memory is freed
 
-  const handleFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+  const handleFiles = async (fileList: FileList | File[]) => {
+    setLoading(true); // start loading
 
-    const processed: ImageItem[] = [];
+    try {
+      const files = Array.from(fileList || []);
 
-    for (const file of files) {
-      if (!file.type.startsWith("image/")) continue;
+      const processed = await Promise.all(
+        files.map(async (file) => {
+          if (!file.type.startsWith("image/")) return null;
 
-      let finalFile = file;
+          let finalFile = file;
+          if (file.size / 1024 / 1024 > MAX_SIZE_MB) {
+            finalFile = await compressImage(file);
+          }
 
-      if (file.size / 1024 / 1024 > MAX_SIZE_MB) {
-        finalFile = await compressImage(file);
-      }
+          return {
+            file: finalFile,
+            preview: URL.createObjectURL(finalFile),
+          };
+        }),
+      );
 
-      processed.push({
-        file: finalFile,
-        preview: URL.createObjectURL(finalFile),
-      });
+      const validProcessed = processed.filter(
+        (item): item is ImageItem => item !== null,
+      );
+
+      setImages((prev) => [...prev, ...validProcessed]);
+    } finally {
+      setLoading(false); // stop loading ALWAYS
     }
-
-    setImages((prev) => [...prev, ...processed]);
-
-    e.target.value = "";
   };
 
   const compressImage = (file: File): Promise<File> => {
@@ -78,7 +90,6 @@ export default function MultiImageUpload({
 
       img.onload = () => {
         const canvas = document.createElement("canvas");
-
         const scale = Math.min(1, MAX_WIDTH / img.width);
         canvas.width = img.width * scale;
         canvas.height = img.height * scale;
@@ -91,7 +102,6 @@ export default function MultiImageUpload({
         canvas.toBlob(
           (blob) => {
             if (!blob) return;
-
             resolve(
               new File([blob], file.name, {
                 type: "image/jpeg",
@@ -110,45 +120,41 @@ export default function MultiImageUpload({
   const removeImage = (index: number) => {
     setImages((prev) => {
       const updated = [...prev];
-
+      // ✅ Fix 4: Revoke only the specific image being deleted
       URL.revokeObjectURL(updated[index].preview);
       updated.splice(index, 1);
-
       return updated;
     });
   };
 
   return (
-    <div className="w-full">
-      <input
-        type="file"
-        multiple
-        accept="image/*"
-        onChange={handleFiles}
-        className="mb-3"
-      />
-
-      {images.length === 0 && (
-        <p className="text-xs text-gray-500">No new images</p>
-      )}
-
-      {/* 🔥 horizontal preview */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+    <div className="w-full flex items-center">
+      <div className="flex flex-row flex-wrap gap-2">
         {images.map((img, index) => (
-          <div key={index} className="relative flex-shrink-0">
+          <div key={img.preview} className="relative flex-shrink-0 mr-1">
             <img
               src={img.preview}
-              className="w-20 h-20 object-cover rounded border"
+              alt="preview"
+              className="w-20 h-20 aspect-square object-cover rounded border"
             />
-
             <button
+              type="button"
               onClick={() => removeImage(index)}
-              className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded"
+              className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full"
             >
               ✕
             </button>
           </div>
         ))}
+      </div>
+
+      <div className="flex-shrink-0">
+        <ImageUploader
+          images={images}
+          setImages={setImages}
+          handleFiles={handleFiles}
+          loading={loading}
+        />
       </div>
     </div>
   );

@@ -162,7 +162,7 @@ export default function Highlight() {
 
       // 🔥 multiple images
       photos.forEach((file: File) => {
-        formData.append("photo", file); // Must match PocketBase field name
+        formData.append("photos", file); // Must match PocketBase field name
       });
       await pb.collection("highlight_pitstop").create(formData);
 
@@ -242,7 +242,7 @@ export default function Highlight() {
               </h2>
               <button
                 onClick={() => setIsOpen(true)}
-                className="bg-indigo-500 text-primary-foreground hover:bg-indigo-500/80 px-3 py-1 rounded text-sm"
+                className="bg-red-500 text-primary-foreground hover:bg-red-600 px-3 py-1 rounded text-sm"
               >
                 + Add Highlight
               </button>
@@ -263,7 +263,9 @@ export default function Highlight() {
                     {/* FORM */}
                     <form className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium">Highlight</label>
+                        <label className="text-sm font-medium ">
+                          Highlight
+                        </label>
                         <input
                           type="text"
                           className="w-full mt-1 border text-xs rounded-lg px-3 py-2"
@@ -370,10 +372,10 @@ export default function Highlight() {
                       onClick={() => toggle(item.id)}
                       className="w-full flex items-center justify-between p-1 hover:bg-muted transition-colors"
                     >
-                      <div className="flex items-center gap-1 text-left">
+                      <div className="flex items-center gap-2 text-left m-1">
                         {/* TYPE */}
                         <span
-                          className={`text-[10px] px-1 py-0 pr-3 rounded ${typeClasses[item.type_equipment]}`}
+                          className={`text-[13px] font-bold px-3 py-1 rounded ${typeClasses[item.type_equipment]}`}
                         >
                           {item.type_equipment}
                         </span>
@@ -421,7 +423,7 @@ export default function Highlight() {
                     >
                       <div
                         className="flex
-                      flex-col"
+                      flex-col "
                       >
                         <ImagePreviewRow
                           images={item.photos}

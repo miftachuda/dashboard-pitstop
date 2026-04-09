@@ -78,18 +78,28 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
                 {eTypes}
               </p>
 
-              <div className="w-20 aspect-square mt-2">
-                <CircularProgressbar
-                  value={progress.average}
-                  text={`${progress.average.toFixed(2)}%`}
-                  circleRatio={0.75}
-                  strokeWidth={14}
-                  styles={buildStyles({
-                    rotation: 1 / 2 + 1 / 8,
-                    strokeLinecap: "butt",
-                    trailColor: "#eeeeee",
-                    pathColor: typeColors[eTypes],
-                  })}
+              <div className="flex items-center gap-2 mt-2">
+                {/* Circular */}
+                <div className="w-20 aspect-square">
+                  <CircularProgressbar
+                    value={progress.average}
+                    text={`${progress.average.toFixed(2)}%`}
+                    circleRatio={0.75}
+                    strokeWidth={14}
+                    styles={buildStyles({
+                      rotation: 1 / 2 + 1 / 8,
+                      strokeLinecap: "butt",
+                      trailColor: "#eeeeee",
+                      pathColor: typeColors[eTypes],
+                    })}
+                  />
+                </div>
+
+                {/* PNG Icon */}
+                <img
+                  src={`/public/${eTypes}.png`} // adjust path
+                  alt={eTypes}
+                  className="w-14 h-14 object-contain"
                 />
               </div>
             </div>

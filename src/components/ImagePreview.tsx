@@ -33,7 +33,7 @@ export default function ImagePreviewRow({
 
   return (
     <>
-      <div className="flex gap-2 overflow-x-auto p-2 border rounded min-h-[88px] items-center">
+      <div className="flex gap-2 overflow-x-auto p-2 mb-2 border rounded min-h-[88px] items-center">
         {images.length === 0 ? (
           <div className="flex flex-col items-center text-gray-400 text-sm">
             <span>No image</span>
