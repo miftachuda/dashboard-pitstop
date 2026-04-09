@@ -60,7 +60,7 @@ export default function Highlight() {
       setHighlights((prev) => prev.filter((item) => item.id !== highlightId));
       toast.custom((t) => (
         <div className="flex items-center gap-3 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg">
-          <span>🗑️ Saved successfully</span>
+          <span>🗑️ Deleted successfully</span>
         </div>
       ));
     } catch (err) {
@@ -354,7 +354,7 @@ export default function Highlight() {
 
             <div
               className={`bg-card border rounded-xl p-2 space-y-1 overflow-y-auto transition-all duration-300 ${
-                expanded ? "max-h-none" : "max-h-[158px]"
+                expanded ? "max-h-none" : "max-h-[200px]"
               }`}
             >
               {highlights.map((item) => {
@@ -373,7 +373,7 @@ export default function Highlight() {
                       <div className="flex items-center gap-1 text-left">
                         {/* TYPE */}
                         <span
-                          className={`text-[10px] px-1 py-0 rounded ${typeClasses[item.type_equipment]}`}
+                          className={`text-[10px] px-1 py-0 pr-3 rounded ${typeClasses[item.type_equipment]}`}
                         >
                           {item.type_equipment}
                         </span>
@@ -437,7 +437,7 @@ export default function Highlight() {
                         <button
                           onClick={() => handleUpload(item.id)}
                           disabled={uploading}
-                          className={`mt-2 px-3 py-1 max-w-xsrounded text-white flex items-center gap-2 ${
+                          className={`mt-2 px-3 py-1 rounded text-white inline-flex w-fit items-center gap-2 ${
                             uploading
                               ? "bg-gray-400 cursor-not-allowed"
                               : "bg-blue-500 hover:bg-blue-600"

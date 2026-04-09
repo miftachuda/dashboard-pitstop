@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Pencil, Check, Loader2 } from "lucide-react";
+import AutoResizeTextarea from "./AutoResizeInput";
 
 type Props = {
   item: any;
@@ -38,11 +39,24 @@ export default function EditableHighlight({ item, pb, onUpdated }: Props) {
   return (
     <div className="flex items-center gap-2">
       {isEditing ? (
-        <input
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="text-xs border px-2 py-1 rounded w-full"
-        />
+        <div className="flex flex-1">
+          {/* Added max-w-full to prevent viewport overflow */}
+          <div className="inline-grid min-w-[50px] max-w-full">
+            <span
+              className="invisible col-start-1 row-start-1 whitespace-pre-wrap px-2 py-1 text-xs border"
+              aria-hidden="true"
+            >
+              {value || " "}
+            </span>
+
+            <textarea
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              rows={1}
+              className="col-start-1 row-start-1 w-full min-w-0 text-xs border px-2 py-1 rounded resize-none overflow-y-auto"
+            />
+          </div>
+        </div>
       ) : (
         <span className="font-medium text-xs flex-1 min-w-0 break-words">
           {item.highlight}
