@@ -95,12 +95,8 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
                   />
                 </div>
 
-                {/* PNG Icon */}
-                <img
-                  src={`/public/${eTypes}.png`} // adjust path
-                  alt={eTypes}
-                  className="w-14 h-14 object-contain"
-                />
+                
+                
               </div>
             </div>
           </div>
