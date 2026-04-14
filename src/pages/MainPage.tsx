@@ -13,7 +13,7 @@ import { Toaster } from "react-hot-toast";
 import { toast } from "sonner";
 import { StatsBar2 } from "@/components/StatsBar2";
 import Highlight from "@/components/Highlight";
-import DailyActivity from "@/components/DailyActivity";
+import DailyActivity from "@/components/DailyActivityPage";
 import DashboardLayout from "@/components/MainLayout";
 
 const MainPage = () => {

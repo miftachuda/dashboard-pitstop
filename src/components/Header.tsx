@@ -3,6 +3,13 @@ import { useEffect, useState } from "react";
 export default function Header() {
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const [now, setNow] = useState<Date>(new Date());
+  const [autoRefresh, setAutoRefresh] = useState(() => {
+    const saved = localStorage.getItem("autoRefresh");
+    return saved === "true"; // default false if null
+  });
+  useEffect(() => {
+    localStorage.setItem("autoRefresh", autoRefresh.toString());
+  }, [autoRefresh]);
 
   // function to refresh data
   const refreshData = async () => {
@@ -17,15 +24,17 @@ export default function Header() {
   };
   // auto refresh every 3 minutes
   useEffect(() => {
+    if (!autoRefresh) return;
+
     const interval = setInterval(
       () => {
         refreshData();
       },
       5 * 60 * 1000,
-    ); // 3 minutes
+    );
 
     return () => clearInterval(interval);
-  }, []);
+  }, [autoRefresh]);
 
   // update "time ago" every second
   useEffect(() => {
@@ -44,7 +53,8 @@ export default function Header() {
   };
   return (
     <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-3">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
+        {/* LEFT: Title */}
         <div>
           <h1 className="text-lg font-display font-bold text-foreground leading-tight">
             Dashboard Pit Stop LOC II 2026
@@ -53,9 +63,33 @@ export default function Header() {
             Restoring Performance Strengthening Reliability
           </p>
         </div>
-        <p className="text-[10px] text-muted-foreground font-mono mt-1 ml-auto">
-          Last refresh: {getTimeAgo()}
-        </p>
+
+        {/* RIGHT: Toggle + last refresh */}
+        <div className="ml-auto flex flex-col items-end gap-1">
+          {/* Toggle Switch */}
+          <button
+            onClick={() => setAutoRefresh((prev) => !prev)}
+            className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${
+              autoRefresh ? "bg-green-500" : "bg-gray-400"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
+                autoRefresh ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </button>
+
+          {/* Label */}
+          <span className="text-[10px] font-mono text-muted-foreground">
+            Auto Refresh: {autoRefresh ? "ON" : "OFF"}
+          </span>
+
+          {/* Last Refresh */}
+          <p className="text-[10px] text-muted-foreground font-mono">
+            Last refresh: {getTimeAgo()}
+          </p>
+        </div>
       </div>
     </header>
   );

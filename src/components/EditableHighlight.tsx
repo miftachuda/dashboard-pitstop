@@ -36,10 +36,9 @@ export default function EditableHighlight({ item, pb, onUpdated }: Props) {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-start gap-2 w-full">
       {isEditing ? (
-        <div className="flex flex-1">
-          {/* Added max-w-full to prevent viewport overflow */}
+        <div className="flex-none max-w-full">
           <div className="inline-grid min-w-[50px] max-w-full">
             <span
               className="invisible col-start-1 row-start-1 whitespace-pre-wrap px-2 py-1 text-xs border"
@@ -57,7 +56,7 @@ export default function EditableHighlight({ item, pb, onUpdated }: Props) {
           </div>
         </div>
       ) : (
-        <span className="font-medium text-sm flex-1 min-w-0 break-words">
+        <span className="font-medium text-sm max-w-full break-words">
           {item.highlight}
         </span>
       )}
@@ -65,7 +64,7 @@ export default function EditableHighlight({ item, pb, onUpdated }: Props) {
       <button
         onClick={isEditing ? handleSave : () => setIsEditing(true)}
         disabled={saving}
-        className={`p-1 rounded text-white flex items-center justify-center ${
+        className={`flex-none p-1 rounded text-white flex items-center justify-center ${
           saving
             ? "bg-gray-400 cursor-not-allowed"
             : isEditing

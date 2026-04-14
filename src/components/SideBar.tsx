@@ -15,6 +15,7 @@ export default function Sidebar({
     { name: "Main", path: "/" },
     { name: "Restroke CV", path: "/restroke" },
     { name: "Strainer", path: "/strainer" },
+    { name: "Daily Activity", path: "/daily" },
   ];
 
   return (

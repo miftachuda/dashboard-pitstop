@@ -132,9 +132,9 @@ const RestrokePage = () => {
   }, []);
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-background">
-        <main className="max-w-8xl  ">
-          <div className=" max-h-[600px] overflow-y-auto">
+      <div className="m-0 p-0 bg-background">
+        <main className=" ">
+          <div className="max-h-[90vh] overflow-y-auto">
             <table className="min-w-full border text-sm">
               <thead className="text-center">
                 <tr>

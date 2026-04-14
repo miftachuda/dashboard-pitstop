@@ -22,7 +22,7 @@ export type ActionItem = {
   action: string;
   createdAt: string; // ISO timestamp
 };
-export type Status = "open" | "need follow up" | "in-progress" | "done";
+export type Status = "open" | "need support" | "in progress" | "done";
 export type HighlightItem = {
   id: string;
   highlight: string;
@@ -31,14 +31,17 @@ export type HighlightItem = {
   follow_up: string;
   created: number;
   updated?: number;
+  tag_number?: string;
+  unit?: string;
+  pic?: string;
   date_closed?: number;
   photos?: string[]; // array of image URLs
 };
 
 const statusColor: Record<HighlightItem["status"], string> = {
   open: "bg-red-100 text-red-700",
-  "need follow up": "bg-red-100 text-red-700",
-  "in-progress": "bg-blue-100 text-blue-700",
+  "need support": "bg-yellow-100 text-yellow-700",
+  "in progress": "bg-blue-100 text-blue-700",
   done: "bg-green-100 text-green-700",
 };
 
@@ -49,6 +52,9 @@ export default function Highlight() {
   const [saving, setSaving] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [highlight, setHighlight] = useState("");
+  const [pic, setPic] = useState("");
+  const [tag_number, setTag_number] = useState("");
+  const [unit, setUnit] = useState("");
   const [type_equipment, setType_equipment] = useState<EquipmentType>("Other");
   const [status, setStatus] = useState<HighlightItem["status"]>("open");
   const toggle = (id: string) => {
@@ -77,6 +83,9 @@ export default function Highlight() {
       status: record.status as HighlightItem["status"],
       created: record.created,
       updated: record.updated,
+      tag_number: record.tag_number,
+      unit: record.unit,
+      pic: record.pic,
       date_closed: record.date_closed,
       photos: record.photos || [],
       // add fields as needed
@@ -159,6 +168,9 @@ export default function Highlight() {
       formData.append("highlight", highlight);
       formData.append("type_equipment", type_equipment);
       formData.append("status", status);
+      formData.append("tag_number", tag_number);
+      formData.append("unit", unit);
+      formData.append("pic", pic);
 
       // 🔥 multiple images
       photos.forEach((file: File) => {
@@ -172,6 +184,10 @@ export default function Highlight() {
       setHighlight("");
       setType_equipment(equipmentTypes[0]);
       setStatus("open");
+      setTag_number("");
+      setUnit("");
+      setPic("");
+      setPhotos([]);
 
       toast.custom(() => (
         <div className="flex items-center gap-3 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg">
@@ -227,6 +243,15 @@ export default function Highlight() {
       ),
     );
   };
+  const statusOrder: Record<string, number> = {
+    open: 1,
+    "need support": 2,
+    "in progress": 3,
+    done: 4,
+  };
+  const sorted_hl = highlights.sort((a, b) => {
+    return statusOrder[a.status] - statusOrder[b.status];
+  });
   return (
     <>
       {loading ? (
@@ -269,7 +294,7 @@ export default function Highlight() {
                         <input
                           type="text"
                           className="w-full mt-1 border text-xs rounded-lg px-3 py-2"
-                          placeholder="Type Hghlight"
+                          placeholder="Highlight"
                           value={highlight}
                           onChange={(e) => setHighlight(e.target.value)}
                         />
@@ -300,6 +325,33 @@ export default function Highlight() {
 
                       {/* Status */}
                       <div>
+                        <label className="text-sm font-medium">
+                          Tag Number
+                        </label>
+                        <input
+                          type="text"
+                          className="w-full mt-1 border text-xs rounded-lg px-3 py-2"
+                          placeholder="Tag Number"
+                          value={tag_number}
+                          onChange={(e) => setTag_number(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">
+                          PIC bagian terkait
+                          <label className="text-[8px] font-medium ml-2">
+                            eg. LOC II, MA II, SSIE, PE, etc.
+                          </label>
+                        </label>
+                        <input
+                          type="text"
+                          className="w-full mt-1 border text-xs rounded-lg px-3 py-2"
+                          placeholder="PIC bagian terkait "
+                          value={pic}
+                          onChange={(e) => setPic(e.target.value)}
+                        />
+                      </div>
+                      <div>
                         <label className="text-sm font-medium">Status</label>
                         <select
                           value={status}
@@ -307,6 +359,8 @@ export default function Highlight() {
                           className="w-full mt-1 text-xs border rounded-lg px-3 py-2"
                         >
                           <option value="open">Open</option>
+                          <option value="in progress">In Progress</option>
+                          <option value="need support">Need Support</option>
                           <option value="done">Done</option>
                         </select>
                       </div>
@@ -359,7 +413,7 @@ export default function Highlight() {
                 expanded ? "max-h-none" : "max-h-[200px]"
               }`}
             >
-              {highlights.map((item) => {
+              {sorted_hl.map((item) => {
                 const isOpen = openId === item.id;
 
                 return (
@@ -368,50 +422,70 @@ export default function Highlight() {
                     className="border rounded-lg overflow-hidden transition-all"
                   >
                     {/* HEADER ROW */}
-                    <div
-                      onClick={() => toggle(item.id)}
-                      className="w-full flex items-center justify-between p-1 hover:bg-muted transition-colors"
-                    >
-                      <div className="flex items-center gap-2 text-left m-1">
-                        {/* TYPE */}
-                        <span
-                          className={`text-[13px] font-bold px-3 py-1 rounded ${typeClasses[item.type_equipment]}`}
-                        >
-                          {item.type_equipment}
-                        </span>
+                    <div onClick={() => toggle(item.id)} className="w-full ">
+                      <div className="flex flex-col items-end">
+                        <div className="w-full flex flex-col items-end justify-between p-1 hover:bg-muted transition-colors">
+                          <div className="flex items-center w-full gap-2 text-left pl-3 m-1">
+                            {/* LEFT SIDE */}
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              {/* TYPE */}
+                              <span
+                                className={`min-w-32 text-[13px] font-bold px-3 py-1 rounded whitespace-nowrap ${typeClasses[item.type_equipment]}`}
+                              >
+                                {item.type_equipment}
+                              </span>
 
-                        {/* TITLE */}
-                        <EditableHighlight
-                          item={item}
-                          pb={pb}
-                          onUpdated={handleHighlightUpdate}
-                        />
-                      </div>
+                              {/* TAG */}
 
-                      <div className="flex items-center gap-3 shrink-0 pl-6">
-                        <div>
-                          <span className="text-xs text-muted-foreground ">
-                            Created:{" "}
-                            {formatDistanceToNowStrict(new Date(item.created), {
-                              addSuffix: true,
-                            })}
-                          </span>
+                              {/* Editable (biar dia yang flexible) */}
+                              <div className="flex-1 min-w-0">
+                                <EditableHighlight
+                                  item={item}
+                                  pb={pb}
+                                  onUpdated={handleHighlightUpdate}
+                                />
+                              </div>
+                            </div>
+
+                            {/* RIGHT SIDE */}
+                            <div className="flex items-center gap-3 shrink-0 pl-4">
+                              <StatusPopup
+                                item={item}
+                                handleStatusChange={handleStatusChange}
+                                statusColor={statusColor}
+                              />
+                              <DeleteWithConfirm
+                                onDelete={() => deleteHighlight(item.id)}
+                              />
+
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform ${
+                                  isOpen ? "rotate-180" : ""
+                                }`}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex items-stretch gap-2 w-full pr-3">
+                            <span className="flex items-center ml-2 px-2.5 py-1 text-xs rounded-2xl bg-lime-50 text-lime-700 whitespace-nowrap">
+                              tag : {item.tag_number}
+                            </span>
+                            <div className="flex ml-auto flex-row">
+                              <span className="inline-flex items-center  px-2.5 py-1 text-xs rounded-2xl bg-cyan-50 text-cyan-700">
+                                PIC : {item.pic}
+                              </span>
+                              <span className="text-xs text-muted-foreground px-2.5 py-1 ">
+                                Created:{" "}
+                                {formatDistanceToNowStrict(
+                                  new Date(item.created),
+                                  {
+                                    addSuffix: true,
+                                  },
+                                )}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        {/* STATUS */}
-                        <StatusPopup
-                          item={item}
-                          handleStatusChange={handleStatusChange}
-                          statusColor={statusColor}
-                        />
-                        <DeleteWithConfirm
-                          onDelete={() => deleteHighlight(item.id)}
-                        />
-                        {/* CHEVRON */}
-                        <ChevronDown
-                          className={`w-4 h-4 transition-transform ${
-                            isOpen ? "rotate-180" : ""
-                          }`}
-                        />
                       </div>
                     </div>
 

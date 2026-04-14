@@ -7,6 +7,7 @@ import MainPage from "./pages/MainPage.tsx";
 import RestrokePage from "./pages/RestrokePage.tsx";
 import StrainerPage from "./pages/StrainerPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import DailyActivity from "./components/DailyActivityPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="/restroke" element={<RestrokePage />} />
           <Route path="/strainer" element={<StrainerPage />} />
+          <Route path="/daily" element={<DailyActivity />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </HashRouter>
