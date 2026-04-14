@@ -117,7 +117,7 @@ export default function ActionList({
               handleAdd();
             }
           }}
-          placeholder="Add action..."
+          placeholder="follow up..."
           className="text-xs px-2 py-1 border rounded w-full"
         />
 
