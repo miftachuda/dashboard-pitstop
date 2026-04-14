@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChevronDown, Loader2 } from "lucide-react";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
 import {
   EquipmentType,
   equipmentTypes,
@@ -415,10 +417,11 @@ export default function DailyActivity() {
                           <div>
                             <span className="text-xs text-muted-foreground">
                               Created:{" "}
-                              {formatDistanceToNowStrict(
+                              {format(
                                 new Date(item.created),
+                                "HH:mm EEEE-dd-MM-yyyy",
                                 {
-                                  addSuffix: true,
+                                  locale: id,
                                 },
                               )}
                             </span>
