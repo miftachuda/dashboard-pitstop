@@ -448,6 +448,11 @@ export default function DailyActivity() {
                           >
                             {item.type_equipment}
                           </span>
+                          <span
+                            className={`text-[10px] px-1 py-0 rounded bg-gray-200 text-gray-800`}
+                          >
+                            {item.tag_number}
+                          </span>
 
                           {/* TITLE */}
                           <span className="font-medium text-xs">
