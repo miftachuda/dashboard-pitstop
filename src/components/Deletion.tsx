@@ -44,8 +44,8 @@ export default function DeleteWithConfirm({
           <div className="relative bg-white rounded-xl shadow-xl w-full max-w-sm p-6 z-10">
             <h2 className="text-lg font-semibold mb-3">Confirm Delete</h2>
             <p className="text-sm text-gray-600 mb-6">
-              Are you sure you want to delete this highlight? This action cannot
-              be undone.
+              Are you sure you want to delete this item? This action cannot be
+              undone.
             </p>
 
             <div className="flex justify-end gap-2">

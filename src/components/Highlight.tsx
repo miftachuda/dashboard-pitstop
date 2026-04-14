@@ -62,7 +62,10 @@ export default function Highlight() {
   };
   const deleteHighlight = async (highlightId: string) => {
     try {
-      await pb.collection("highlight_pitstop").delete(highlightId);
+      // pb.collection("highlight_pitstop").delete(highlightId);
+      await pb.collection("highlight_pitstop").update(highlightId, {
+        is_deleted: true,
+      });
       setHighlights((prev) => prev.filter((item) => item.id !== highlightId));
       toast.custom((t) => (
         <div className="flex items-center gap-3 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg">
@@ -138,7 +141,9 @@ export default function Highlight() {
   async function loadHighlights() {
     try {
       const [highlightRecords] = await Promise.all([
-        pb.collection("highlight_pitstop").getFullList({ sort: "-created" }), // example
+        pb
+          .collection("highlight_pitstop")
+          .getFullList({ sort: "-created", filter: "is_deleted = false" }), // example
       ]);
 
       const fetchedHighlights: HighlightItem[] = highlightRecords.map(
