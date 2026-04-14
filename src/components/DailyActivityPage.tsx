@@ -450,6 +450,7 @@ export default function DailyActivity() {
                         <ActionList
                           itemId={item.id}
                           initialList={parseFollowUp(item.follow_up)}
+                          colID="daily_activity"
                         />
                       </div>
                     </div>

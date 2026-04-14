@@ -547,6 +547,7 @@ export default function Highlight() {
                         <ActionList
                           itemId={item.id}
                           initialList={parseFollowUp(item.follow_up)}
+                          colID="highlight_pitstop"
                         />
                       </div>
                     </div>

@@ -7,9 +7,11 @@ import { formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
 export default function ActionList({
   itemId,
   initialList,
+  colID,
 }: {
   itemId: string;
   initialList: ActionItem[];
+  colID: string;
 }) {
   const [list, setList] = useState<ActionItem[]>(initialList || []);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -20,7 +22,7 @@ export default function ActionList({
     setList(newList);
 
     try {
-      await pb.collection("highlight_pitstop").update(itemId, {
+      await pb.collection(colID).update(itemId, {
         follow_up: {
           actions: newList, // no stringify needed if JSON field
         },
