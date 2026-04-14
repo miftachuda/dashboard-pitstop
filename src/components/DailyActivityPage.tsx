@@ -225,15 +225,7 @@ export default function DailyActivity() {
                     + Create Daily Activity
                   </button>
                 </div>
-                {/* <div className="mt-1 mb-1">
-                  <input
-                    type="text"
-                    placeholder="Search equipments..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full md:w-96 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div> */}
+
                 <div className="flex flex-nowrap items-center gap-1 mt-1 mb-1 overflow-x-auto">
                   <button
                     onClick={() => setPrefixFilter(null)}
@@ -245,7 +237,6 @@ export default function DailyActivity() {
                   >
                     All
                   </button>
-
                   {prefixes.map((p) => (
                     <button
                       key={p}

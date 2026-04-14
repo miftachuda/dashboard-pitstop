@@ -53,7 +53,7 @@ export function StatsBar({ tasks }: StatsBarProps) {
   ).length;
 
   const overallPercent =
-    totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+    totalSteps > 0 ? ((completedSteps / totalSteps) * 100).toFixed(2) : "0.00";
   const stats = [
     {
       label: "Steps In Progress",
