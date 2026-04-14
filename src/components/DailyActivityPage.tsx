@@ -327,7 +327,9 @@ export default function DailyActivity() {
                           />
                         </div>
                         <div>
-                          <label className="text-sm font-medium">Status</label>
+                          <label className="text-sm font-medium">
+                            Discipline
+                          </label>
                           <select
                             value={discipline}
                             onChange={(e) =>
