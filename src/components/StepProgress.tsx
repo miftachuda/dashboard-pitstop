@@ -523,7 +523,7 @@ export function StepProgress({
           </div>
         ))}
       </div>
-      <Collapsible title="Photo Evidence">
+      <Collapsible title="Photo Documentation">
         <ImagePreviewRow
           images={imagesMap[task.id] || task.photos || []}
           recordId={task.id}
