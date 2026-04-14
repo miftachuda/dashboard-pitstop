@@ -33,7 +33,13 @@ type ActivityItem = {
   created: number;
   updated?: number;
 };
-
+type discipline =
+  | "Stationary"
+  | "Rotating"
+  | "Instrument"
+  | "Electrical"
+  | "Operation"
+  | "Other";
 const statusColor: Record<ActivityItem["status"], string> = {
   open: "bg-red-100 text-red-700",
   "need support": "bg-yellow-100 text-yellow-700",
@@ -46,9 +52,11 @@ export default function DailyActivity() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-
-  const [activity, setHighlight] = useState("");
-  const [type_equipment, setType_equipment] = useState<EquipmentType>("Other");
+  const [discipline, setDiscipline] = useState<discipline>("Stationary");
+  const [activity, setActivity] = useState("");
+  const [tagNumber, setTagNumber] = useState("");
+  const [type_equipment, setType_equipment] =
+    useState<EquipmentType>("Heat Exchanger");
   const [status, setStatus] = useState<ActivityItem["status"]>("open");
   const toggle = (id: string) => {
     setOpenId((prev) => (prev === id ? null : id));
@@ -117,6 +125,8 @@ export default function DailyActivity() {
         activity,
         type_equipment,
         status,
+        tag_number: tagNumber,
+        discipline,
       };
       if (saving) return;
       setSaving(true);
@@ -125,7 +135,7 @@ export default function DailyActivity() {
       await loadActivity();
 
       setIsOpen(false);
-      setHighlight("");
+      setActivity("");
       setType_equipment(equipmentTypes[0]);
       setStatus("open");
       toast.custom((t) => (
@@ -299,16 +309,44 @@ export default function DailyActivity() {
                           <input
                             type="text"
                             className="w-full mt-1 border text-xs rounded-lg px-3 py-2"
-                            placeholder="Type Hghlight"
+                            placeholder="Activity description..."
                             value={activity}
-                            onChange={(e) => setHighlight(e.target.value)}
+                            onChange={(e) => setActivity(e.target.value)}
                           />
                         </div>
-
+                        <div>
+                          <label className="text-sm font-medium">
+                            Tag Number
+                          </label>
+                          <input
+                            type="text"
+                            className="w-full mt-1 border text-xs rounded-lg px-3 py-2"
+                            placeholder="Tag number..."
+                            value={tagNumber}
+                            onChange={(e) => setTagNumber(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Status</label>
+                          <select
+                            value={discipline}
+                            onChange={(e) =>
+                              setDiscipline(e.target.value as discipline)
+                            }
+                            className="w-full mt-1 text-xs border rounded-lg px-3 py-2"
+                          >
+                            <option value="Stationary">Stationary</option>
+                            <option value="Instrument">Instrument</option>
+                            <option value="Rotating">Rotating</option>
+                            <option value="Electrical">Electrical</option>
+                            <option value="Operation">Operation</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
                         {/* Type Equipment */}
                         <div className="flex flex-col gap-1">
                           <label className="text-sm font-medium">
-                            Type Equipment
+                            Equipment Type
                           </label>
                           <select
                             value={type_equipment}
@@ -336,6 +374,8 @@ export default function DailyActivity() {
                             className="w-full mt-1 text-xs border rounded-lg px-3 py-2"
                           >
                             <option value="open">Open</option>
+                            <option value="in progress">In Progress</option>
+                            <option value="need support">Need Support</option>
                             <option value="done">Done</option>
                           </select>
                         </div>
@@ -416,7 +456,6 @@ export default function DailyActivity() {
                         <div className="flex items-center gap-3">
                           <div>
                             <span className="text-xs text-muted-foreground">
-                              Created:{" "}
                               {format(
                                 new Date(item.created),
                                 "HH:mm EEEE-dd-MM-yyyy",
