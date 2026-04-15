@@ -165,7 +165,7 @@ const MainPage = () => {
   async function loadTasks() {
     try {
       const pitstopRecords = await pb.collection("pitstop").getFullList({
-        sort: "title",
+        sort: "-updated",
       });
       const fetchedTasks: StepTask[] = pitstopRecords.map(recordToStepTask);
       setTasks(fetchedTasks);

@@ -68,7 +68,6 @@ function getDuration(start?: number, end?: number) {
 
   return `${hours}h ${mins}m`;
 }
-
 export function StepProgress({
   task,
   onStepToggle,
@@ -535,7 +534,6 @@ export function StepProgress({
           taskId={task.id}
           uploadedTrigger={uploadDoneKey}
         />
-
         <button
           onClick={() => handleUpload(task.id)}
           disabled={uploadingMap[task.id]}

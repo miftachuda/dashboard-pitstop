@@ -222,7 +222,7 @@ export default function DailyActivity() {
                     onClick={() => setIsOpen(true)}
                     className="bg-indigo-500 text-primary-foreground hover:bg-indigo-500/80 px-3 py-1 rounded text-sm"
                   >
-                    + Create Daily Activity
+                    + Post Daily Activity
                   </button>
                 </div>
 
