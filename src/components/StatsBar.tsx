@@ -67,7 +67,7 @@ export function StatsBar({ tasks }: StatsBarProps) {
       label: "Overall Progress",
       value: `${overallPercent}%`,
       icon: ChartNoAxesCombined,
-      color: "text-foreground",
+      color: "text-green-500",
     },
   ];
   const [open, setOpen] = useState(false);
@@ -138,7 +138,9 @@ export function StatsBar({ tasks }: StatsBarProps) {
             <stat.icon className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-2xl font-display font-bold text-card-foreground">
+            <p
+              className={`text-2xl font-display font-bold text-card-foreground ${stat.color}`}
+            >
               {stat.value}
             </p>
             <p className="text-xs text-muted-foreground">{stat.label}</p>

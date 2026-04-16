@@ -85,7 +85,7 @@ export default function Highlight() {
       follow_up: record.follow_up,
       status: record.status as HighlightItem["status"],
       created: record.created,
-      updated: record.updatedCustom,
+      updated: record.updated,
       tag_number: record.tag_number,
       unit: record.unit,
       pic: record.pic,

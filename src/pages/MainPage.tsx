@@ -88,7 +88,7 @@ const MainPage = () => {
     try {
       await pb.collection("pitstop").update(taskId, {
         steps: updatedSteps,
-        customUpdated: new Date().toISOString(),
+        updatedCustom: new Date().toISOString(),
       });
     } catch (err) {
       console.error("Failed to sync with PocketBase", err);
@@ -98,7 +98,7 @@ const MainPage = () => {
     try {
       await pb.collection("pitstop").update(task.id, {
         steps: task.steps,
-        customUpdated: new Date().toISOString(),
+        updatedCustom: new Date().toISOString(),
       });
     } catch (err) {
       console.error("Failed to sync with PocketBase", err);
@@ -170,7 +170,7 @@ const MainPage = () => {
   async function loadTasks() {
     try {
       const pitstopRecords = await pb.collection("pitstop").getFullList({
-        sort: "-updated",
+        sort: "-updatedCustom",
       });
       const fetchedTasks: StepTask[] = pitstopRecords.map(recordToStepTask);
       setTasks(fetchedTasks);
@@ -204,7 +204,7 @@ const MainPage = () => {
           <div className="mt-4 mb-6">
             <input
               type="text"
-              placeholder="Search joblistd..."
+              placeholder="Search joblist..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full md:w-96 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"

@@ -53,7 +53,7 @@ const StrainerPage = () => {
       progress: record.progress ?? 0,
       keterangan: record.keterangan ?? "",
       created: record.created,
-      updated: record.updatedCustom,
+      updated: record.updated,
     };
   }
   const [loading, setLoading] = useState(true);
