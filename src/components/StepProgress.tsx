@@ -255,7 +255,7 @@ export function StepProgress({
     try {
       await pb.collection("pitstop").update(taskId, {
         assignee,
-        customUpdated: new Date().toISOString(),
+        updatedCustom: new Date().toISOString(),
       });
       toast.success("PIC updated");
     } catch (err) {
@@ -406,126 +406,160 @@ export function StepProgress({
       </div>
 
       <div className="space-y-1">
-        {task.steps.map((step) => (
-          <div key={step.id} className=" rounded-lg p-1">
-            <div key={step.id}>
-              <button
-                onClick={() => toggleStep(step.id)}
-                className="w-full flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1 hover:text-foreground"
-              >
-                <span>{step.stepname}</span>
+        {task.steps.map((step) => {
+          // 🔥 place your logic here if needed
+          if (!step) return null;
+          const totalProgress = (step.steplist || []).reduce(
+            (acc, item) => acc + (item.progress || 0),
+            0,
+          );
 
-                {openSteps[step.id] ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : (
-                  <ChevronRight className="w-4 h-4" />
-                )}
-              </button>
+          const avgProgress =
+            step.steplist?.length > 0
+              ? totalProgress / step.steplist.length
+              : 0;
 
-              {openSteps[step.id] && (
-                <div>
-                  {step.steplist.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center ml-6 mr-2 mt-2 border gap-1 my-1 rounded-lg  transition-colors text-left group"
+          const isCompleted = step.steplist?.every(
+            (item) => item.progress === 100,
+          );
+
+          return (
+            <div key={step.id} className="rounded-lg p-1">
+              <div>
+                <button
+                  onClick={() => toggleStep(step.id)}
+                  className="w-full flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1 hover:text-foreground"
+                >
+                  <div className="flex flex-row">
+                    <span>{step.stepname}</span>
+                    <span
+                      className={`ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded border transition-all
+  ${
+    avgProgress === 100
+      ? "bg-white text-green-600 border-green-500 shadow-[inset_0_0_6px_rgba(34,197,94,0.5)]"
+      : "bg-white text-orange-500 border-orange-400 shadow-[inset_0_0_6px_rgba(251,146,60,0.5)]"
+  }`}
                     >
-                      {/* Status indicator */}
+                      {avgProgress}%
+                    </span>
+                  </div>
 
-                      <div className="flex flex-col w-full ">
-                        <div className="flex items-center">
-                          <p
-                            className={`text-xs select-none text-wrap font-medium truncate ${
-                              item.status === "completed"
-                                ? "text-card-foreground"
-                                : "text-muted-foreground"
-                            } px-3 pt-2 pb-1`}
-                          >
-                            {item.steptitle}
-                          </p>
-                          <div
-                            className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-semibold
-      ${item.status === "completed" ? "bg-success text-success-foreground" : ""}
-      ${item.status === "in-progress" ? "bg-accent text-accent-foreground" : ""}
-      ${item.status === "not yet" ? "bg-secondary text-muted-foreground" : ""}
-    `}
-                          >
-                            {item.status === "completed" ? (
-                              <Check className="w-2.5 h-2.5" />
-                            ) : item.status === "in-progress" ? (
-                              <Hourglass className="w-2.5 h-2.5" />
-                            ) : (
-                              <Circle className="w-2 h-2" />
-                            )}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex items-center w-full gap-3 px-2 rounded-md ">
-                            <div
-                              className={`flex-shrink-0 min-w-[80px] text-center whitespace-nowrap
-    text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md
-    ${item.status === "completed" ? "bg-success/10 text-success" : ""}
-    ${item.status === "in-progress" ? "bg-accent/15 text-accent-foreground" : ""}
-    ${item.status === "not yet" ? "bg-secondary text-muted-foreground" : ""}
-  `}
-                            >
-                              {item.status}
+                  {openSteps[step.id] ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4" />
+                  )}
+                </button>
+
+                {openSteps[step.id] && (
+                  <div>
+                    {step.steplist.map((item) => {
+                      // 🔥 optional logic per item
+                      if (!item) return null;
+
+                      return (
+                        <div
+                          key={item.id}
+                          className="flex items-center ml-6 mr-2 mt-2 border gap-1 my-1 rounded-lg transition-colors text-left group"
+                        >
+                          <div className="flex flex-col w-full">
+                            {/* HEADER */}
+                            <div className="flex items-center">
+                              <p
+                                className={`text-xs select-none text-wrap font-medium truncate ${
+                                  item.status === "completed"
+                                    ? "text-card-foreground"
+                                    : "text-muted-foreground"
+                                } px-3 pt-2 pb-1`}
+                              >
+                                {item.steptitle}
+                              </p>
+
+                              <div
+                                className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-semibold
+                          ${item.status === "completed" ? "bg-success text-success-foreground" : ""}
+                          ${item.status === "in-progress" ? "bg-accent text-accent-foreground" : ""}
+                          ${item.status === "not yet" ? "bg-secondary text-muted-foreground" : ""}
+                        `}
+                              >
+                                {item.status === "completed" ? (
+                                  <Check className="w-2.5 h-2.5" />
+                                ) : item.status === "in-progress" ? (
+                                  <Hourglass className="w-2.5 h-2.5" />
+                                ) : (
+                                  <Circle className="w-2 h-2" />
+                                )}
+                              </div>
                             </div>
 
-                            <div className="flex flex-col items-end gap-1">
-                              <div className="flex select-none items-center gap-2 mt-1">
-                                <DateRange
-                                  item={item}
-                                  taskId={task.id}
-                                  stepId={step.id}
-                                  handleTimeChange={handleTimeChange}
-                                  formatDate={formatDate}
-                                  formatTime={formatTime}
-                                  getDuration={getDuration}
+                            {/* BODY */}
+                            <div>
+                              <div className="flex items-center w-full gap-3 px-2 rounded-md">
+                                <div
+                                  className={`flex-shrink-0 min-w-[80px] text-center whitespace-nowrap
+                            text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md
+                            ${item.status === "completed" ? "bg-success/10 text-success" : ""}
+                            ${item.status === "in-progress" ? "bg-accent/15 text-accent-foreground" : ""}
+                            ${item.status === "not yet" ? "bg-secondary text-muted-foreground" : ""}
+                          `}
+                                >
+                                  {item.status}
+                                </div>
+
+                                <div className="flex flex-col items-end gap-1">
+                                  <div className="flex select-none items-center gap-2 mt-1">
+                                    <DateRange
+                                      item={item}
+                                      taskId={task.id}
+                                      stepId={step.id}
+                                      handleTimeChange={handleTimeChange}
+                                      formatDate={formatDate}
+                                      formatTime={formatTime}
+                                      getDuration={getDuration}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              <ProgressSlider
+                                value={item.progress}
+                                taskId={task.id}
+                                stepId={step.id}
+                                itemId={item.id}
+                                onChange={handleProgressChange}
+                              />
+
+                              <div className="flex-1 min-w-0 px-3 py-2">
+                                <AutoResizeTextarea
+                                  value={item.description || ""}
+                                  onChange={(e) => {
+                                    onUpdateDescription(
+                                      task.id,
+                                      step.id,
+                                      item.id,
+                                      e.target.value,
+                                    );
+                                  }}
+                                  placeholder="Click to add description"
+                                  className="w-full text-xs 
+                            bg-muted/40 border border-border rounded-[2px]
+                            px-2 py-1
+                            outline-none
+                            focus:ring-1 focus:ring-accent
+                            text-foreground placeholder:text-muted-foreground"
                                 />
                               </div>
                             </div>
                           </div>
-                          <ProgressSlider
-                            value={item.progress}
-                            taskId={task.id}
-                            stepId={step.id}
-                            itemId={item.id}
-                            onChange={handleProgressChange}
-                          />
-                          <div className="flex-1 min-w-0 px-3 py-2">
-                            <AutoResizeTextarea
-                              value={item.description || ""}
-                              // onBlur={(e) => {
-                              //   onSave(task.id);
-                              //   setEditing(false);
-                              // }}
-                              onChange={(e) => {
-                                onUpdateDescription(
-                                  task.id,
-                                  step.id,
-                                  item.id,
-                                  e.target.value,
-                                );
-                              }}
-                              placeholder="Click to add description"
-                              className="w-full text-xs 
-    bg-muted/40 border border-border rounded-[2px]
-    px-2 py-1
-    outline-none
-    focus:ring-1 focus:ring-accent
-    text-foreground placeholder:text-muted-foreground"
-                            />
-                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div></div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <ImagePreviewRow
           images={imagesMap[task.id] || task.photos || []}
           recordId={task.id}

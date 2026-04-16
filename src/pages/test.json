@@ -1,0 +1,233 @@
+[
+  {
+    "id": "7d462f61-ad7a-4565-83d2-60eb314ab0c6",
+    "stepname": "1. PREPARATION",
+    "steplist": [
+      {
+        "id": "46d2ead9-aa0a-4ccd-a21c-7eb63334d7e1",
+        "steptitle": "Pasang Blind In/Out Furnace",
+        "start": "22/04/2026 22:00",
+        "end": "23/04/2026 03:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "id": "7d462f61-ad7a-4565-83d2-60eb314ab0c6",
+    "stepname": "2. RADIANT CELL A",
+    "steplist": [
+      {
+        "id": "46d2ead9-aa0a-4ccd-a21c-7eb63334d7e1",
+        "steptitle": "Buka semua manhole cover Cell A",
+        "start": "22/04/2026 22:00",
+        "end": "23/04/2026 03:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "9cf8b5fb-d374-40ae-9669-fec715e5d5a5",
+        "steptitle": "Pasang Blower dan pendinginan Cell A",
+        "start": "23/04/2026 03:00",
+        "end": "23/04/2026 15:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "b03c9f1d-6c3c-47a0-9be0-5200fc8ac41b",
+        "steptitle": "Pasang scaffold pada internal radian Cell A",
+        "start": "23/04/2026 15:00",
+        "end": "24/04/2026 08:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "688fcdb6-eb14-4338-9455-2b00fd45d242",
+        "steptitle": "Initial Inspection Cell A",
+        "start": "24/04/2026 08:00",
+        "end": "24/04/2026 14:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "80ec60e2-120c-4673-ac73-2cce28fc845f",
+        "steptitle": "Perbaikan minor refractory Cell A",
+        "start": "24/04/2026 08:00",
+        "end": "26/04/2026 02:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "36b3bb85-43b7-4391-a882-c56f8be74b3f",
+        "steptitle": "Perbaikan Fire Brick lantai Cell A",
+        "start": "24/04/2026 08:00",
+        "end": "26/04/2026 02:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "cab25436-28a2-4484-b6d8-1b061bb54edc",
+        "steptitle": "Bongkar scaffold pada internal radian Cell A",
+        "start": "26/04/2026 02:00",
+        "end": "26/04/2026 10:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "35bf07d2-8a6e-4ede-9bf3-aeaa011594dd",
+        "steptitle": "Bersihkan kotoran pada internal Cell A",
+        "start": "26/04/2026 10:00",
+        "end": "26/04/2026 14:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "8479b30e-7801-48ba-8aad-0beca7875245",
+        "steptitle": "Penggantian gasket burner assy no 1",
+        "start": "24/04/2026 08:00",
+        "end": "26/04/2026 02:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "d94d3c20-c5ad-4c06-867e-12a861b7632c",
+        "steptitle": "Final Inspection pada Cell A",
+        "start": "26/04/2026 14:00",
+        "end": "26/04/2026 16:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "02170607-8881-4d54-9a27-f1b54feae608",
+        "steptitle": "Tutup semua manhole cover Cell A",
+        "start": "26/04/2026 16:00",
+        "end": "26/04/2026 22:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "id": "011cece2-ad16-433a-991a-80c031a5328a",
+    "stepname": "3. RADIANT CELL B",
+    "steplist": [
+      {
+        "id": "352332bf-25e5-4aff-8de7-945df899f4d8",
+        "steptitle": "Buka semua manhole cover Cell B",
+        "start": "22/04/2026 22:00",
+        "end": "23/04/2026 03:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "ec095d88-6dd7-43b1-9b9f-9d7e6905a10a",
+        "steptitle": "Pasang Blower dan pendinginan Cell B",
+        "start": "23/04/2026 03:00",
+        "end": "23/04/2026 15:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "0cde0f62-3a2a-4158-8df3-ef90fa8afe93",
+        "steptitle": "Pasang scaffold pada internal radian Cell B",
+        "start": "23/04/2026 15:00",
+        "end": "24/04/2026 08:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "ef17ab9a-abe7-4754-a22a-7c9fc751a311",
+        "steptitle": "Initial Inspection Cell B",
+        "start": "24/04/2026 08:00",
+        "end": "24/04/2026 14:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "1dbd1fec-31bd-4e49-96f9-c16a9ba7baef",
+        "steptitle": "Perbaikan minor refractory Cell B",
+        "start": "24/04/2026 08:00",
+        "end": "26/04/2026 02:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "8479b30e-7801-48ba-8aad-0beca78752dd",
+        "steptitle": "Perbaikan Fire Brick lantai Cell B",
+        "start": "24/04/2026 08:00",
+        "end": "26/04/2026 02:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "c9a290c2-23b2-4cb8-a833-3427551bb0f6",
+        "steptitle": "Bongkar scaffold pada internal radian Cell B",
+        "start": "26/04/2026 02:00",
+        "end": "26/04/2026 10:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "2991e746-7309-4787-9ab4-f0f43db4bd3e",
+        "steptitle": "Bersihkan kotoran pada internal Cell B",
+        "start": "26/04/2026 10:00",
+        "end": "26/04/2026 14:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "20a9454e-95cb-4b36-bfde-169c5c5ca546",
+        "steptitle": "Final Inspection pada Cell B",
+        "start": "26/04/2026 14:00",
+        "end": "26/04/2026 16:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "a8ae1250-ed87-4b56-839a-9555262c7313",
+        "steptitle": "Tutup semua manhole cover Cell B",
+        "start": "26/04/2026 16:00",
+        "end": "26/04/2026 22:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "id": "7d462f61-ad7a-4565-83d2-60eb314ab0c6",
+    "stepname": "4. COMISSIONING",
+    "steplist": [
+      {
+        "id": "46d2ead9-aa0a-4ccd-a21c-7eb63334d7e1",
+        "steptitle": "Lepas Blind In/Out Furnace",
+        "start": "22/04/2026 22:00",
+        "end": "23/04/2026 03:00",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      }
+    ]
+  }
+]
