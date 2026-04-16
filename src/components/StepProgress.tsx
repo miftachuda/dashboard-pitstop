@@ -43,7 +43,7 @@ const priorityLabels: Record<Priority, string> = {
   high: "High",
   critical: "Critical",
 };
-const typeLabels: Record<EquipmentType, string> = {
+export const typeLabels: Record<EquipmentType, string> = {
   "Heat Exchanger": "Heat Exchanger",
   Piping: "Piping",
   Column: "Column",
@@ -494,6 +494,10 @@ export function StepProgress({
                           <div className="flex-1 min-w-0 px-3 py-2">
                             <AutoResizeTextarea
                               value={item.description || ""}
+                              // onBlur={(e) => {
+                              //   onSave(task.id);
+                              //   setEditing(false);
+                              // }}
                               onChange={(e) => {
                                 onUpdateDescription(
                                   task.id,

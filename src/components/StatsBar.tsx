@@ -6,6 +6,8 @@ import {
   ChartNoAxesCombined,
   NotepadText,
 } from "lucide-react";
+import StepsModal from "./CompletedSteps";
+import { useState } from "react";
 
 interface StatsBarProps {
   tasks: StepTask[];
@@ -68,6 +70,7 @@ export function StatsBar({ tasks }: StatsBarProps) {
       color: "text-foreground",
     },
   ];
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
@@ -85,10 +88,10 @@ export function StatsBar({ tasks }: StatsBarProps) {
             <p className="text-2xl font-display font-bold text-card-foreground">
               {completedEquipments}
             </p>
-            <p className="text-xs text-foreground">Equipment Completed</p>
+            <p className="text-xs text-foreground">Joblists Completed</p>
           </div>
           <p className="text-xs text-muted-foreground">
-            From {totalEquipments} Equipments
+            From {totalEquipments} Joblists
           </p>
         </div>
       </div>
@@ -101,7 +104,10 @@ export function StatsBar({ tasks }: StatsBarProps) {
         >
           <CheckCircle2 className="w-5 h-5" />
         </div>
-        <div>
+        <div
+          onClick={() => setOpen(true)}
+          className="cursor-pointer hover:opacity-80 transition"
+        >
           <div className="flex flex-row items-center gap-1">
             <p className="text-2xl font-display font-bold text-card-foreground">
               {completedSteps}
@@ -112,6 +118,14 @@ export function StatsBar({ tasks }: StatsBarProps) {
             From {totalSteps} Steps
           </p>
         </div>
+
+        <StepsModal
+          open={open}
+          onClose={() => setOpen(false)}
+          completedSteps={completedSteps}
+          totalSteps={totalSteps}
+          tasks={tasks}
+        />
       </div>
       {stats.map((stat) => (
         <div
