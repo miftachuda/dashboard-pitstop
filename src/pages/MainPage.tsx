@@ -44,10 +44,13 @@ const MainPage = () => {
       ) ||
       task.equipment?.toLowerCase().includes(q);
 
+    const cleanTitle = task.title
+      ?.replace(/\s+/g, "") // hapus semua spasi
+      .toUpperCase();
+
     const matchPrefix =
       !prefixFilter ||
-      task.title?.substring(0, 3).toUpperCase() === prefixFilter.toUpperCase();
-
+      cleanTitle?.substring(0, 3) === prefixFilter.toUpperCase();
     const matchType =
       !selectedType || // kalau belum pilih → semua lolos
       task.type === selectedType;
@@ -201,7 +204,7 @@ const MainPage = () => {
           <div className="mt-4 mb-6">
             <input
               type="text"
-              placeholder="Search equipments..."
+              placeholder="Search joblistd..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full md:w-96 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"

@@ -56,3 +56,7 @@
 .react-datepicker__time-box {
   width: 85px;
 }
+.CircularProgressbar-text {
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}

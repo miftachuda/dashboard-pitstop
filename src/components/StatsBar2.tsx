@@ -80,12 +80,12 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
 
               <div className="flex items-center gap-2 mt-2">
                 {/* Circular */}
-                <div className="w-20 aspect-square">
+                <div className="relative w-36 aspect-square">
                   <CircularProgressbar
                     value={progress.average}
-                    text={`${progress.average.toFixed(2)}%`}
+                    text="" // ❌ remove default text
                     circleRatio={0.75}
-                    strokeWidth={14}
+                    strokeWidth={18}
                     styles={buildStyles({
                       rotation: 1 / 2 + 1 / 8,
                       strokeLinecap: "butt",
@@ -93,8 +93,14 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
                       pathColor: typeColors[eTypes],
                     })}
                   />
-                </div>
 
+                  {/* ✅ Custom Text Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-[18px] font-bold text-gray-900">
+                      {progress.average.toFixed(2)}%
+                    </span>
+                  </div>
+                </div>
                 {/* PNG Icon */}
                 <img
                   src={`/${eTypes}.png`} // adjust path
