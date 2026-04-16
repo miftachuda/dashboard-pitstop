@@ -75,6 +75,7 @@ const RestrokePage = () => {
 
       await pb.collection("restroke").update(row.id, {
         [field]: value,
+        customUpdated: new Date().toISOString(),
       });
     } catch (err) {
       console.error("PB update failed:", err);
@@ -89,7 +90,7 @@ const RestrokePage = () => {
       const row = updated[index];
 
       await pb.collection("restroke").update(row.id, {
-        [key]: value, // ✅ langsung ke field
+        [key]: value, // ✅ langsung ke
       });
     } catch (err) {
       console.error("PB update failed:", err);

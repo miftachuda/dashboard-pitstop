@@ -255,6 +255,7 @@ export function StepProgress({
     try {
       await pb.collection("pitstop").update(taskId, {
         assignee,
+        customUpdated: new Date().toISOString(),
       });
       toast.success("PIC updated");
     } catch (err) {
@@ -532,7 +533,7 @@ export function StepProgress({
           collectionID="pitstop"
         />
       </div>
-      <Collapsible title="Photo Documentation">
+      <Collapsible title="Upload Photos">
         <MultiImageUpload
           onChange={handlePhotosChange}
           taskId={task.id}

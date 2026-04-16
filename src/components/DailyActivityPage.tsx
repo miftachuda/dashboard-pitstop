@@ -88,7 +88,7 @@ export default function DailyActivity() {
       follow_up: record.follow_up,
       status: record.status as ActivityItem["status"],
       created: record.created,
-      updated: record.updated,
+      updated: record.updatedCustom,
     };
   }
   const [loading, setLoading] = useState(true);

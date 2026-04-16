@@ -26,6 +26,7 @@ export default function ActionList({
         follow_up: {
           actions: newList, // no stringify needed if JSON field
         },
+        customUpdated: new Date().toISOString(),
       });
       toast.success("Follow-up actions updated");
     } catch (err) {

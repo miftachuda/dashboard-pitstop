@@ -85,6 +85,7 @@ const MainPage = () => {
     try {
       await pb.collection("pitstop").update(taskId, {
         steps: updatedSteps,
+        customUpdated: new Date().toISOString(),
       });
     } catch (err) {
       console.error("Failed to sync with PocketBase", err);
@@ -94,6 +95,7 @@ const MainPage = () => {
     try {
       await pb.collection("pitstop").update(task.id, {
         steps: task.steps,
+        customUpdated: new Date().toISOString(),
       });
     } catch (err) {
       console.error("Failed to sync with PocketBase", err);
@@ -157,7 +159,7 @@ const MainPage = () => {
       dicipline: r.dicipline ?? "",
       priority: r.priority ?? "low",
       assignee: r.assignee ?? "",
-      lastmodified: r.updated ?? Date.now(),
+      lastmodified: r.updatedCustom ?? Date.now(),
       steps,
       photos,
     };
