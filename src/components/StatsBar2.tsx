@@ -105,7 +105,7 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
                 <img
                   src={`/${eTypes}.png`} // adjust path
                   alt={eTypes}
-                  className="ml-6 w-14 h-14 object-contain"
+                  className="ml-2 w-14 h-14 object-contain"
                 />
               </div>
             </div>
