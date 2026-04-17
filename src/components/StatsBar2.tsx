@@ -95,7 +95,7 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
         />
 
         <p
-          className="font-display font-bold tracking-wide relative z-10"
+          className="font-display font-bold tracking-wide relative"
           style={{
             color: color,
             fontSize: "clamp(12px, 2.5vw, 20px)",
