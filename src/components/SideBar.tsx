@@ -14,7 +14,7 @@ export default function Sidebar({
   const menus = [
     { name: "Main", path: "/" },
     { name: "Restroke CV", path: "/restroke" },
-    { name: "Strainer", path: "/strainer" },
+    { name: "Cleaning Strainer", path: "/strainer" },
     { name: "Daily Activity", path: "/daily" },
   ];
 

@@ -54,10 +54,34 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
     const filtered = filterTasksByType(tasks, type);
     return calculateTaskProgress(filtered);
   };
+  const isTaskComplete = (task: StepTask) => {
+    return task.steps?.every((group) =>
+      group.steplist?.every((step) => step.progress === 100),
+    );
+  };
+  const getEquipmentTypeStats = (tasks: StepTask[], type: EquipmentType) => {
+    const filtered = filterTasksByType(tasks, type);
+
+    let total = filtered.length;
+    let completed = 0;
+
+    filtered.forEach((task) => {
+      if (isTaskComplete(task)) {
+        completed += 1;
+      }
+    });
+
+    return {
+      total,
+      completed,
+      percentage: total > 0 ? (completed / total) * 100 : 0,
+    };
+  };
   return (
     <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
       {equipmentTypes.map((eTypes) => {
         const progress = getProgressByType(tasks, eTypes);
+        const stats = getEquipmentTypeStats(tasks, eTypes);
 
         return (
           <div
@@ -102,11 +126,16 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
                   </div>
                 </div>
                 {/* PNG Icon */}
-                <img
-                  src={`/${eTypes}.png`} // adjust path
-                  alt={eTypes}
-                  className="ml-2 w-14 h-14 object-contain"
-                />
+                <div className="flex flex-col align-middle items-center">
+                  <div className="mt-1 font-semibold">
+                    {`${stats.completed}/${stats.total}`}
+                  </div>
+                  <img
+                    src={`/${eTypes}.png`} // adjust path
+                    alt={eTypes}
+                    className="ml-2 w-14 h-14 object-contain"
+                  />
+                </div>
               </div>
             </div>
           </div>
