@@ -54,6 +54,7 @@ export const typeLabels: Record<EquipmentType, string> = {
   "Jet Ejector": "Jet Ejector",
   Strainer: "Strainer",
   Instrument: "Instrument",
+  Electrical: "Electrical",
   Other: "Other",
 };
 function getDuration(start?: number, end?: number) {

@@ -119,23 +119,27 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
                   />
 
                   {/* ✅ Custom Text Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[18px] font-bold text-gray-900">
-                      {progress.average.toFixed(2)}%
-                    </span>
+                  <div className="absolute mt-8 inset-4 flex flex-col items-center justify-center">
+                    <div className="flex flex-col items-center leading-none gap-1">
+                      <span className="text-[20px] font-bold text-gray-900">
+                        {progress.average.toFixed(2)}
+                      </span>
+                      <span className="text-[14px] font-bold text-gray-900 -mt-1">
+                        %
+                      </span>
+                    </div>
+                    <div className="text-[18px] font-medium mr-2">
+                      {`${stats.completed}/${stats.total}`}
+                    </div>
                   </div>
                 </div>
                 {/* PNG Icon */}
-                <div className="flex flex-col align-middle items-center">
-                  <div className="mt-1 font-semibold">
-                    {`${stats.completed}/${stats.total}`}
-                  </div>
-                  <img
-                    src={`/${eTypes}.png`} // adjust path
-                    alt={eTypes}
-                    className="ml-2 w-14 h-14 object-contain"
-                  />
-                </div>
+
+                <img
+                  src={`/${eTypes}.png`} // adjust path
+                  alt={eTypes}
+                  className=" w-14 h-14 object-contain"
+                />
               </div>
             </div>
           </div>

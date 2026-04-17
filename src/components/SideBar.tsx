@@ -1,4 +1,4 @@
-import { Menu } from "lucide-react";
+import { Menu, Home, RefreshCw, Filter, CalendarDays } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Sidebar({
@@ -12,10 +12,10 @@ export default function Sidebar({
   const location = useLocation();
 
   const menus = [
-    { name: "Main", path: "/" },
-    { name: "Restroke CV", path: "/restroke" },
-    { name: "Cleaning Strainer", path: "/strainer" },
-    { name: "Daily Activity", path: "/daily" },
+    { name: "Main", path: "/", icon: Home },
+    { name: "Restroke CV", path: "/restroke", icon: RefreshCw },
+    { name: "Cleaning Strainer", path: "/strainer", icon: Filter },
+    { name: "Daily Activity", path: "/daily", icon: CalendarDays },
   ];
 
   return (
@@ -35,19 +35,25 @@ export default function Sidebar({
       </div>
 
       <div className="flex flex-col gap-1 p-2">
-        {menus.map((m) => (
-          <button
-            key={m.path}
-            onClick={() => navigate(m.path)}
-            className={`text-left px-3 py-2 rounded-md text-sm transition ${
-              location.pathname === m.path
-                ? "bg-primary text-white"
-                : "hover:bg-muted"
-            }`}
-          >
-            {collapsed ? m.name[0] : m.name}
-          </button>
-        ))}
+        {menus.map((m) => {
+          const Icon = m.icon;
+
+          return (
+            <button
+              key={m.path}
+              onClick={() => navigate(m.path)}
+              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition ${
+                location.pathname === m.path
+                  ? "bg-primary text-white"
+                  : "hover:bg-muted"
+              }`}
+            >
+              <Icon size={18} />
+
+              {!collapsed && <span>{m.name}</span>}
+            </button>
+          );
+        })}
       </div>
     </aside>
   );

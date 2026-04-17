@@ -11,6 +11,7 @@ export type EquipmentType =
   | "Jet Ejector"
   | "Strainer"
   | "Instrument"
+  | "Electrical"
   | "Other";
 export const equipmentTypes: EquipmentType[] = [
   "Heat Exchanger",
@@ -23,6 +24,7 @@ export const equipmentTypes: EquipmentType[] = [
   "Jet Ejector",
   "Strainer",
   "Instrument",
+  "Electrical",
   "Other",
 ];
 export const typeClasses: Record<EquipmentType, string> = {
@@ -36,6 +38,7 @@ export const typeClasses: Record<EquipmentType, string> = {
   "Jet Ejector": "bg-teal-100 text-teal-800",
   Strainer: "bg-gray-200 text-gray-800",
   Instrument: "bg-sky-100 text-sky-800",
+  Electrical: "bg-indigo-100 text-indigo-800",
   Other: "bg-zinc-200 text-zinc-800",
 };
 
@@ -50,6 +53,7 @@ export const typeColors: Record<EquipmentType, string> = {
   "Jet Ejector": "#84cc16",
   Strainer: "#f97316",
   Instrument: "#14b8a6",
+  Electrical: "#0ea5e9",
   Other: "#6b7280",
 };
 export interface MaintenanceStep {
