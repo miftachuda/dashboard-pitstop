@@ -9,7 +9,7 @@ export function Collapsible({ title, children }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border rounded-md">
+    <div className="border rounded-md mt-2">
       <button
         onClick={() => setOpen(!open)}
         className="w-full px-4 py-2 flex justify-between items-center bg-gray-50 text-[12px] font-medium rounded-md"

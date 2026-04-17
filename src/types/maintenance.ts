@@ -56,6 +56,7 @@ export const typeColors: Record<EquipmentType, string> = {
   Electrical: "#0ea5e9",
   Other: "#6b7280",
 };
+
 export interface MaintenanceStep {
   id: string;
   steptitle: string;

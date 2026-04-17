@@ -128,7 +128,7 @@ export default function MultiImageUpload({
   };
 
   return (
-    <div className="w-full flex items-center">
+    <div className="w-full flex items-center mt-2">
       <div className="flex flex-row flex-wrap gap-2">
         {images.map((img, index) => (
           <div key={img.preview} className="relative flex-shrink-0 mr-1">

@@ -22,6 +22,8 @@ export const equipmentTypes: EquipmentType[] = [
   "Vessel",
   "Jet Ejector",
   "Strainer",
+  "Electrical",
+  "Instrument",
 ];
 
 export function StatsBar2({ tasks }: StatsBar2Props) {
@@ -77,8 +79,35 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
       percentage: total > 0 ? (completed / total) * 100 : 0,
     };
   };
+  function ETypeCard({ eTypes, color = "#6C63FF" }) {
+    return (
+      <div
+        className="relative inline-flex items-center gap-1 rounded-md px-3 py-0  overflow-hidden"
+        style={{
+          backgroundColor: color + "18",
+          border: `1.5px solid ${color}`,
+        }}
+      >
+        {/* Decorative glow blob */}
+        <span
+          className="absolute -top-3 -left-3 w-8 h-8 rounded-full blur-xl opacity-60 pointer-events-none"
+          style={{ backgroundColor: color }}
+        />
+
+        <p
+          className="font-display font-bold tracking-wide relative z-10"
+          style={{
+            color: color,
+            fontSize: "clamp(12px, 2.5vw, 20px)",
+          }}
+        >
+          {eTypes}
+        </p>
+      </div>
+    );
+  }
   return (
-    <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       {equipmentTypes.map((eTypes) => {
         const progress = getProgressByType(tasks, eTypes);
         const stats = getEquipmentTypeStats(tasks, eTypes);
@@ -97,17 +126,15 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
             }}
             className="rounded-xl p-2 flex items-center gap-4"
           >
-            <div className="flex flex-col items-center justify-start">
-              <p className="text-xs font-display font-bold text-card-foreground">
-                {eTypes}
-              </p>
+            <div className="flex flex-col items-start justify-start">
+              {ETypeCard({ eTypes, color: typeColors[eTypes] })}
 
               <div className="flex items-center gap-2 mt-2">
                 {/* Circular */}
                 <div className="relative w-36 aspect-square">
                   <CircularProgressbar
                     value={progress.average}
-                    text="" // ❌ remove default text
+                    text=""
                     circleRatio={0.75}
                     strokeWidth={18}
                     styles={buildStyles({
@@ -118,7 +145,6 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
                     })}
                   />
 
-                  {/* ✅ Custom Text Overlay */}
                   <div className="absolute mt-8 inset-4 flex flex-col items-center justify-center">
                     <div className="flex flex-col items-center leading-none gap-1">
                       <span className="text-[20px] font-bold text-gray-900">
@@ -129,16 +155,18 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
                       </span>
                     </div>
                     <div className="text-[18px] font-medium mr-2">
-                      {`${stats.completed}/${stats.total}`}
+                      <span style={{ color: typeColors[eTypes] }}>
+                        {stats.completed}
+                      </span>
+                      /{stats.total}
                     </div>
                   </div>
                 </div>
-                {/* PNG Icon */}
 
                 <img
-                  src={`/${eTypes}.png`} // adjust path
+                  src={`/${eTypes}.png`}
                   alt={eTypes}
-                  className=" w-14 h-14 object-contain"
+                  className="w-[clamp(24px,8vw,84px)] h-auto object-contain"
                 />
               </div>
             </div>

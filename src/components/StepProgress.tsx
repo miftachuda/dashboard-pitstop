@@ -441,7 +441,7 @@ export function StepProgress({
       : "bg-white text-orange-500 border-orange-400 shadow-[inset_0_0_6px_rgba(251,146,60,0.5)]"
   }`}
                     >
-                      {avgProgress}%
+                      {avgProgress.toFixed(2)}%
                     </span>
                   </div>
 
