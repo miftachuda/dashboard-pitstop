@@ -21,7 +21,7 @@ type ActionItem = {
   createdAt: string; // ISO timestamp
 };
 type Status = "open" | "need support" | "in progress" | "done";
-type ActivityItem = {
+export type ActivityItem = {
   id: string;
   activity: string;
   type_equipment: EquipmentType;
@@ -103,10 +103,10 @@ export default function DailyActivity() {
         pb.collection("daily_activity").getFullList({ sort: "-created" }), // example
       ]);
 
-      const fetchedHighlights: ActivityItem[] = activityRecords.map(
+      const fetchedActivities: ActivityItem[] = activityRecords.map(
         (record) => recordToActivityItem(record), // create this mapper
       );
-      setDaily_activity(fetchedHighlights); // <- new state
+      setDaily_activity(fetchedActivities); // <- new state
     } catch (err) {
       console.error(err);
     } finally {

@@ -13,7 +13,7 @@ import { Toaster } from "react-hot-toast";
 import { toast } from "sonner";
 import { StatsBar2 } from "@/components/StatsBar2";
 import Highlight from "@/components/Highlight";
-import DailyActivity from "@/components/DailyActivityPage";
+
 import DashboardLayout from "@/components/MainLayout";
 
 const MainPage = () => {
@@ -167,11 +167,13 @@ const MainPage = () => {
       photos,
     };
   }
+  const [sortOption, setSortOption] = useState("-updatedCustom");
   async function loadTasks() {
     try {
       const pitstopRecords = await pb.collection("pitstop").getFullList({
-        sort: "-updatedCustom",
+        sort: sortOption,
       });
+
       const fetchedTasks: StepTask[] = pitstopRecords.map(recordToStepTask);
       setTasks(fetchedTasks);
     } catch (err) {
@@ -180,6 +182,9 @@ const MainPage = () => {
       setLoading(false);
     }
   }
+  useEffect(() => {
+    loadTasks();
+  }, [sortOption]);
   useEffect(() => {
     loadTasks();
   }, []);
@@ -254,6 +259,16 @@ const MainPage = () => {
               </button>
             ))}
           </div>
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            className="border px-2 py-1 rounded font-light text-xs"
+          >
+            <option value="title">Ascending</option>
+            <option value="-title">Descending</option>
+            <option value="-updatedCustom">Latest Updated</option>
+            <option value="updatedCustom">Oldest Updated</option>
+          </select>
           {loading ? (
             <div className="flex justify-center items-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary"></div>

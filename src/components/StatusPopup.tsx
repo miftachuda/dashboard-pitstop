@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { HighlightItem } from "./DailyActivityPage";
+import { ActivityItem } from "./DailyActivityPage";
 
 export default function StatusPopup({
   item,
@@ -15,7 +15,7 @@ export default function StatusPopup({
   statusColor: Record<string, string>;
 }) {
   const [open, setOpen] = useState(false);
-  const statusDotColor: Record<HighlightItem["status"], string> = {
+  const statusDotColor: Record<ActivityItem["status"], string> = {
     open: "bg-red-500",
     "need support": "bg-yellow-500",
     "in progress": "bg-blue-500",
@@ -27,7 +27,7 @@ export default function StatusPopup({
       {/* Trigger */}
       <span
         onClick={() => setOpen(true)}
-        className={`text-xs px-2 py-1 rounded cursor-pointer ${statusColor[item.status]}`}
+        className={`text-xs px-2 py-1 rounded cursor-pointer min-w-[90px] flex items-center justify-center ${statusColor[item.status]}`}
       >
         {item.status}
       </span>

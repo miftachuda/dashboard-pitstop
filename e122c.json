@@ -4,10 +4,10 @@
     "stepname": "1. PREPARATION",
     "steplist": [
       {
-        "id": "fb2116a5-dcf2-4197-8d94-e6d65t78a7c6",
-        "steptitle": "Dekontaminasi / Drain Fluida",
-        "start": "26/04/2026 21:00",
-        "end": "27/04/2026 03:00",
+        "id": "4ee0614e-6e9d-48aa-97c0-3ed99542435",
+        "steptitle": "Dekontaminasi / Drain Fluida  / Gas Freeing",
+        "start": "",
+        "end": "",
         "status": "not yet",
         "progress": 0,
         "description": ""
@@ -29,7 +29,16 @@
     "steplist": [
       {
         "id": "9b15d893-003c-4d03-8aa9-69ad5a367c3a",
-        "steptitle": "Buka Bonnet/cleaning",
+        "steptitle": "Buka Bonnet",
+        "start": "",
+        "end": "",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "9b15d893-003c-4d03-8aa9-69ad5a356tyh",
+        "steptitle": "Cleaning Bonnet",
         "start": "",
         "end": "",
         "status": "not yet",
@@ -38,7 +47,16 @@
       },
       {
         "id": "3d0d9833-8559-4d52-8375-111c8d1f4605",
-        "steptitle": "Buka Shell cover/cleaning",
+        "steptitle": "Buka Shell cover",
+        "start": "",
+        "end": "",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "3d0d9833-8559-4d52-8375-111c8d1f4605",
+        "steptitle": "Cleaning Shell cover ",
         "start": "",
         "end": "",
         "status": "not yet",
@@ -47,7 +65,26 @@
       },
       {
         "id": "f709271f-cec5-4302-8419-fedb7235c215",
-        "steptitle": "Buka Floating head/cleaning",
+        "steptitle": "Buka Floating Head",
+        "start": "",
+        "end": "",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "f709271f-cec5-4302-8419-fedb72354tgt",
+        "steptitle": "Cleaning Floating Head",
+        "start": "",
+        "end": "",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+
+      {
+        "id": "f709271f-cec5-4302-8419-fedb7rrt2354tgt",
+        "steptitle": "Cabut Tube Bundle",
         "start": "",
         "end": "",
         "status": "not yet",
@@ -56,7 +93,16 @@
       },
       {
         "id": "80d04296-aa99-42d2-a0a9-d179becf15ae",
-        "steptitle": "Cleaning Tube Bundle di site",
+        "steptitle": "Cleaning Tube Bundle di WS",
+        "start": "",
+        "end": "",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
+      {
+        "id": "f709271f-cec5-4302-8419-fedb726554tgt",
+        "steptitle": "Cleaning Internal Shell",
         "start": "",
         "end": "",
         "status": "not yet",
@@ -71,6 +117,15 @@
         "status": "not yet",
         "progress": 0,
         "description": ""
+      },
+      {
+        "id": "80d04296-aa99-42d2-a0a9-d179becf15ae",
+        "steptitle": "Hard Coating Pada Tube Sheet",
+        "start": "",
+        "end": "",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
       }
     ]
   },
@@ -78,6 +133,15 @@
     "id": "c28d40cd-07ab-422b-b381-f5c69c9b7be0",
     "stepname": "3. TEST & PERB HE",
     "steplist": [
+      {
+        "id": "fbfe14be-04cd-4d6e-8c3b-3d4d3f3f54e1ae",
+        "steptitle": "Pasang Tube Bundle",
+        "start": "",
+        "end": "",
+        "status": "not yet",
+        "progress": 0,
+        "description": ""
+      },
       {
         "id": "fbfe14be-04cd-4d6e-8c3b-3d4d3f3fe1ae",
         "steptitle": "Pasang Ring test",
@@ -89,7 +153,7 @@
       },
       {
         "id": "d23bfc37-9f90-41f5-91a9-a12bea397ee3",
-        "steptitle": "Shell Test/ring",
+        "steptitle": "Shell Test / Ring Test",
         "start": "",
         "end": "",
         "status": "not yet",
@@ -143,7 +207,7 @@
       },
       {
         "id": "9e5d7941-e97a-4cde-9f55-13bb6f48ba86",
-        "steptitle": "Hydrotest Shell side",
+        "steptitle": "Hydrotest Shell side / Final Test",
         "start": "",
         "end": "",
         "status": "not yet",
@@ -166,10 +230,10 @@
         "description": ""
       },
       {
-        "id": "fb2116a5-dcf2-4197-8d94-e6d65t78a7c6",
+        "id": "8e672593-d1b9-40f5-b006-af7111d1546",
         "steptitle": "Pasang Cap / Plug",
-        "start": "26/04/2026 21:00",
-        "end": "27/04/2026 03:00",
+        "start": "",
+        "end": "",
         "status": "not yet",
         "progress": 0,
         "description": ""
