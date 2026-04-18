@@ -167,7 +167,7 @@ const MainPage = () => {
       photos,
     };
   }
-  const [sortOption, setSortOption] = useState("-updatedCustom");
+  const [sortOption, setSortOption] = useState("title");
   async function loadTasks() {
     try {
       const pitstopRecords = await pb.collection("pitstop").getFullList({
