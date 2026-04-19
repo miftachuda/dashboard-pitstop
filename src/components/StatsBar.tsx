@@ -54,8 +54,17 @@ export function StatsBar({ tasks }: StatsBarProps) {
     t.steps.every((s) => s.steplist.every((i) => i.status === "completed")),
   ).length;
 
+  const allItems = tasks.flatMap(
+    (t) => t.steps?.flatMap((s) => s.steplist || []) || [],
+  );
+
   const overallPercent =
-    totalSteps > 0 ? ((completedSteps / totalSteps) * 100).toFixed(2) : "0.00";
+    allItems.length > 0
+      ? (
+          allItems.reduce((sum, item) => sum + (item.progress ?? 0), 0) /
+          allItems.length
+        ).toFixed(2)
+      : "0.00";
   const stats = [
     {
       label: "Steps In Progress",

@@ -8,6 +8,7 @@ import RestrokePage from "./pages/RestrokePage.tsx";
 import StrainerPage from "./pages/StrainerPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import DailyActivity from "./components/DailyActivityPage.tsx";
+import PhotoGallery from "./pages/ImageGallery.tsx";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,8 @@ const App = () => (
           <Route path="/restroke" element={<RestrokePage />} />
           <Route path="/strainer" element={<StrainerPage />} />
           <Route path="/daily" element={<DailyActivity />} />
+          <Route path="/photos" element={<PhotoGallery />} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </HashRouter>

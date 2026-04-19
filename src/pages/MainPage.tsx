@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   equipmentTypes,
@@ -9,7 +9,7 @@ import {
 import { StepProgress } from "@/components/StepProgress";
 import { StatsBar } from "@/components/StatsBar";
 import { pb } from "@/lib/pocketbase";
-import { Toaster } from "react-hot-toast";
+
 import { toast } from "sonner";
 import { StatsBar2 } from "@/components/StatsBar2";
 import Highlight from "@/components/Highlight";
@@ -189,6 +189,107 @@ const MainPage = () => {
     loadTasks();
   }, []);
 
+  const getProgressByPrefix = (prefix: string) => {
+    const filteredTasks = tasks.filter(
+      (t) => t.title?.substring(0, 3).toUpperCase() === prefix.toUpperCase(),
+    );
+
+    if (filteredTasks.length === 0) return 0;
+
+    // Ambil semua steplist dari semua steps
+    const allItems = filteredTasks.flatMap(
+      (t) => t.steps?.flatMap((s) => s.steplist || []) || [],
+    );
+
+    if (allItems.length === 0) return 0;
+
+    const total = allItems.reduce((sum, item) => sum + (item.progress || 0), 0);
+
+    return Math.round(total / allItems.length);
+  };
+  const allPrefixes = ["All", ...prefixes];
+  const getTotalProgress = () => {
+    const allItems = tasks.flatMap(
+      (t) => t.steps?.flatMap((s) => s.steplist || []) || [],
+    );
+
+    if (!allItems.length) return 0;
+
+    const total = allItems.reduce((sum, item) => sum + (item.progress ?? 0), 0);
+
+    return Number((total / allItems.length).toFixed(2));
+  };
+  const progressMap = useMemo(() => {
+    const map: Record<string, number> = {};
+
+    prefixes.forEach((p) => {
+      map[p] = getProgressByPrefix(p);
+    });
+
+    map["All"] = getTotalProgress();
+
+    return map;
+  }, [tasks, prefixes]);
+  const prefixColors: Record<
+    string,
+    {
+      bg: string;
+      text: string;
+      border: string;
+      accent: string;
+    }
+  > = {
+    All: {
+      bg: "bg-gray-100",
+      text: "text-gray-800",
+      border: "border-gray-300",
+      accent: "text-gray-500",
+    },
+    "021": {
+      bg: "bg-blue-100",
+      text: "text-blue-800",
+      border: "border-blue-300",
+      accent: "text-blue-600",
+    },
+    "022": {
+      bg: "bg-green-100",
+      text: "text-green-800",
+      border: "border-green-300",
+      accent: "text-green-600",
+    },
+    "023": {
+      bg: "bg-yellow-100",
+      text: "text-yellow-800",
+      border: "border-yellow-300",
+      accent: "text-yellow-600",
+    },
+
+    // ✅ Added ones
+    "024": {
+      bg: "bg-purple-100",
+      text: "text-purple-800",
+      border: "border-purple-300",
+      accent: "text-purple-600",
+    },
+    "041": {
+      bg: "bg-pink-100",
+      text: "text-pink-800",
+      border: "border-pink-300",
+      accent: "text-pink-600",
+    },
+    "025": {
+      bg: "bg-indigo-100",
+      text: "text-indigo-800",
+      border: "border-indigo-300",
+      accent: "text-indigo-600",
+    },
+    "002": {
+      bg: "bg-teal-100",
+      text: "text-teal-800",
+      border: "border-teal-300",
+      accent: "text-teal-600",
+    },
+  };
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-background">
@@ -215,29 +316,43 @@ const MainPage = () => {
               className="w-full md:w-96 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          <div className="flex flex-wrap gap-2 mt-3 mb-6">
-            <button
-              onClick={() => setPrefixFilter(null)}
-              className={`px-3 py-1 rounded-md border text-sm ${
-                prefixFilter === null ? "bg-primary text-white" : "bg-white"
-              }`}
-            >
-              All
-            </button>
+          <div className="flex flex-wrap gap-4 mt-1 mb-2">
+            {allPrefixes.map((p) => {
+              const isAll = p === "All";
+              const isActive = (isAll && !prefixFilter) || prefixFilter === p;
 
-            {prefixes.map((p) => (
-              <button
-                key={p}
-                onClick={() => setPrefixFilter(p)}
-                className={`px-3 py-1 rounded-md border text-sm ${
-                  prefixFilter === p ? "bg-primary text-white" : "bg-white"
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+              const color = prefixColors[p] || prefixColors["All"];
+
+              return (
+                <button
+                  key={p}
+                  onClick={() => setPrefixFilter(isAll ? null : p)}
+                  className={`flex flex-col items-center justify-center 
+              w-20 h-8 rounded-xl border transition-all duration-200 ease-out
+              ${
+                isActive
+                  ? `${color.bg} ${color.text} ${color.border}
+                     scale-110 shadow-lg ring-2 ring-offset-2 ${color.accent}`
+                  : `${color.bg} ${color.text} ${color.border}
+                     opacity-70 hover:opacity-100 hover:scale-105`
+              }`}
+                >
+                  {/* Title */}
+                  <div className="text-xs font-semibold capitalize">{p}</div>
+
+                  {/* Percentage */}
+                  <div
+                    className={`text-xs font-bold ${
+                      isActive ? color.accent : `${color.accent} opacity-70`
+                    }`}
+                  >
+                    {progressMap[p] ?? 0}%
+                  </div>
+                </button>
+              );
+            })}
           </div>
-          <div className="flex flex-wrap gap-2 mt-3 mb-6">
+          <div className="flex flex-wrap gap-2 mt-1 mb-2">
             <button
               onClick={() => setselectedType(null)}
               className={`px-3 py-1 rounded-md border text-sm ${
