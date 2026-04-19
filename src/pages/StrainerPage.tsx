@@ -2,7 +2,7 @@ import DashboardLayout from "@/components/MainLayout";
 import RestrokeInput from "@/components/RestrokeInput";
 import { pb } from "@/lib/pocketbase";
 import { EquipmentType, equipmentTypes } from "@/types/maintenance";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const StrainerPage = () => {
@@ -20,7 +20,7 @@ const StrainerPage = () => {
     updated?: number;
   };
 
-  const [cleaning_strainer, setDaily_activity] = useState<StrainerItem[]>([]);
+  const [cleaning_strainer, setCleaningStrainer] = useState<StrainerItem[]>([]);
   const [saving, setSaving] = useState(false);
 
   const [activity, setHighlight] = useState("");
@@ -29,7 +29,7 @@ const StrainerPage = () => {
   const deleteStrainer = async (activityId: string) => {
     try {
       await pb.collection("cleaning_strainer").delete(activityId);
-      setDaily_activity((prev) =>
+      setCleaningStrainer((prev) =>
         prev.filter((item) => item.id !== activityId),
       );
       toast.custom((t) => (
@@ -63,13 +63,13 @@ const StrainerPage = () => {
   async function loadStrainer() {
     try {
       const [activityRecords] = await Promise.all([
-        pb.collection("cleaning_strainer").getFullList({ sort: "-created" }), // example
+        pb.collection("cleaning_strainer").getFullList({ sort: "tag_number" }), // example
       ]);
 
       const fetchedHighlights: StrainerItem[] = activityRecords.map(
         (record) => recordToStrainerItem(record), // create this mapper
       );
-      setDaily_activity(fetchedHighlights); // <- new state
+      setCleaningStrainer(fetchedHighlights); // <- new state
     } catch (err) {
       console.error(err);
     } finally {
@@ -109,31 +109,32 @@ const StrainerPage = () => {
     }
   };
   const updateField = async (
-    index: number,
+    rowID: string,
     field: keyof StrainerItem,
     value: any,
   ) => {
-    const updated = cleaning_strainer.map((r, i) =>
-      i === index ? { ...r, [field]: value } : r,
+    const updated = cleaning_strainer.map((r) =>
+      r.id === rowID ? { ...r, [field]: value } : r,
     );
+    const prev = cleaning_strainer;
 
-    setDaily_activity(updated);
+    setCleaningStrainer(updated);
 
     try {
-      const row = updated[index];
-
-      await pb.collection("cleaning_strainer").update(row.id, {
+      await pb.collection("cleaning_strainer").update(rowID, {
         [field]: value,
       });
+      toast.success("Changes saved");
     } catch (err) {
       console.error("PB update failed:", err);
+      setCleaningStrainer(prev); // rollback
+      toast.error("Failed to save changes");
     }
   };
-
   const handleProgressBlur = async (id: string, newProgress: number) => {
     try {
       // update local state
-      setDaily_activity((prev) =>
+      setCleaningStrainer((prev) =>
         prev.map((item) =>
           item.id === id ? { ...item, progress: newProgress } : item,
         ),
@@ -151,7 +152,7 @@ const StrainerPage = () => {
 
   const handleProgressChange = (id: string, newProgress: number) => {
     // update UI immediately
-    setDaily_activity((prev) =>
+    setCleaningStrainer((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, progress: newProgress } : item,
       ),
@@ -174,31 +175,138 @@ const StrainerPage = () => {
 
     return matchPrefix;
   });
+  const getProgressByPrefix = (prefix: string) => {
+    const filtered = cleaning_strainer.filter(
+      (t) =>
+        t.tag_number?.substring(0, 3).toUpperCase() === prefix.toUpperCase(),
+    );
+
+    if (filtered.length === 0) return 0;
+
+    const total = filtered.reduce((sum, t) => sum + (t.progress || 0), 0);
+    return Math.round(total / filtered.length);
+  };
+  const allPrefixes = ["All", ...prefixes];
+  const getTotalProgress = () => {
+    if (!cleaning_strainer.length) return 0;
+
+    const total = cleaning_strainer.reduce(
+      (sum, t) => sum + (t.progress || 0),
+      0,
+    );
+
+    return Math.round(total / cleaning_strainer.length);
+  };
+  const progressMap = useMemo(() => {
+    const map: Record<string, number> = {};
+
+    prefixes.forEach((p) => {
+      map[p] = getProgressByPrefix(p);
+    });
+
+    map["All"] = getTotalProgress();
+
+    return map;
+  }, [cleaning_strainer, prefixes]);
+  const prefixColors: Record<
+    string,
+    {
+      bg: string;
+      text: string;
+      border: string;
+      accent: string;
+    }
+  > = {
+    All: {
+      bg: "bg-gray-100",
+      text: "text-gray-800",
+      border: "border-gray-300",
+      accent: "text-gray-500",
+    },
+    "021": {
+      bg: "bg-blue-100",
+      text: "text-blue-800",
+      border: "border-blue-300",
+      accent: "text-blue-600",
+    },
+    "022": {
+      bg: "bg-green-100",
+      text: "text-green-800",
+      border: "border-green-300",
+      accent: "text-green-600",
+    },
+    "023": {
+      bg: "bg-yellow-100",
+      text: "text-yellow-800",
+      border: "border-yellow-300",
+      accent: "text-yellow-600",
+    },
+
+    // ✅ Added ones
+    "024": {
+      bg: "bg-purple-100",
+      text: "text-purple-800",
+      border: "border-purple-300",
+      accent: "text-purple-600",
+    },
+    "041": {
+      bg: "bg-pink-100",
+      text: "text-pink-800",
+      border: "border-pink-300",
+      accent: "text-pink-600",
+    },
+    "025": {
+      bg: "bg-indigo-100",
+      text: "text-indigo-800",
+      border: "border-indigo-300",
+      accent: "text-indigo-600",
+    },
+    "002": {
+      bg: "bg-teal-100",
+      text: "text-teal-800",
+      border: "border-teal-300",
+      accent: "text-teal-600",
+    },
+  };
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-background">
         <main className="max-w-8xl  px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-nowrap items-center gap-1 mt-1 mb-1 overflow-x-auto">
-            <button
-              onClick={() => setPrefixFilter(null)}
-              className={`px-3 py-1 rounded-md border text-sm whitespace-nowrap flex-shrink-0 ${
-                prefixFilter === null ? "bg-primary text-white" : "bg-white"
-              }`}
-            >
-              All
-            </button>
+          <div className="flex flex-nowrap items-center gap-1 mt-3 mb-4 ">
+            {allPrefixes.map((p) => {
+              const isAll = p === "All";
+              const isActive = (isAll && !prefixFilter) || prefixFilter === p;
 
-            {prefixes.map((p) => (
-              <button
-                key={p}
-                onClick={() => setPrefixFilter(p)}
-                className={`px-3 py-1 rounded-md border text-sm whitespace-nowrap flex-shrink-0 ${
-                  prefixFilter === p ? "bg-primary text-white" : "bg-white"
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+              const color = prefixColors[p] || prefixColors["All"];
+
+              return (
+                <button
+                  key={p}
+                  onClick={() => setPrefixFilter(isAll ? null : p)}
+                  className={`flex flex-col items-center justify-center 
+        w-20 h-15 rounded-xl border shadow-sm transition
+        ${
+          isActive
+            ? // ✅ Active → stronger color
+              `${color.bg} ${color.text} ${color.border} scale-105`
+            : // ✅ Inactive → softer version but SAME color family
+              `${color.bg} ${color.text} ${color.border} opacity-70 hover:opacity-100`
+        }`}
+                >
+                  {/* Title */}
+                  <div className="text-lg capitalize">{p}</div>
+
+                  {/* Percentage */}
+                  <div
+                    className={`text-base font-semibold ${
+                      isActive ? color.accent : `${color.accent} opacity-70`
+                    }`}
+                  >
+                    {progressMap[p] ?? 0}%
+                  </div>
+                </button>
+              );
+            })}
           </div>
           <table className="min-w-full border text-sm">
             <thead className="text-center">
@@ -274,7 +382,9 @@ const StrainerPage = () => {
                   <td>
                     <select
                       value={row.shift ?? ""}
-                      onChange={(e) => updateField(i, "shift", e.target.value)}
+                      onChange={(e) =>
+                        updateField(row.id, "shift", e.target.value)
+                      }
                       className="w-full px-1 border rounded bg-white"
                     >
                       <option value="">-</option>
@@ -288,14 +398,14 @@ const StrainerPage = () => {
                   <td>
                     <RestrokeInput
                       value={row.pic}
-                      onSave={(val) => updateField(i, "pic", val)}
+                      onSave={(val) => updateField(row.id, "pic", val)}
                     />
                   </td>
                   {/* KETERANGAN */}
                   <td>
                     <RestrokeInput
                       value={row.keterangan}
-                      onSave={(val) => updateField(i, "keterangan", val)}
+                      onSave={(val) => updateField(row.id, "keterangan", val)}
                     />
                   </td>
                 </tr>
