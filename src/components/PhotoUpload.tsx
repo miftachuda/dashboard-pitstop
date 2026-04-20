@@ -6,8 +6,14 @@ type ImageItem = {
   file: File;
   preview: string;
 };
-
-export default function UploadCard() {
+type UploadCardProps = {
+  onImagesChange?: (images: { file: File; preview: string }[]) => void;
+  onUploadSuccess: () => void;
+};
+export default function UploadCard({
+  onImagesChange,
+  onUploadSuccess,
+}: UploadCardProps) {
   const [images, setImages] = useState<ImageItem[]>([]);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,8 +21,8 @@ export default function UploadCard() {
   const [dragActive, setDragActive] = useState(false);
 
   const handleFiles = async (fileList: FileList | File[]) => {
-    const files = Array.from(fileList);
     setProcessing(true);
+    const files = Array.from(fileList);
 
     try {
       const processed = await Promise.all(
@@ -72,7 +78,6 @@ export default function UploadCard() {
       return updated;
     });
   };
-
   const handleUpload = async () => {
     if (images.length === 0) return;
 
@@ -87,11 +92,11 @@ export default function UploadCard() {
         await pb.collection("photos").create(formData);
       }
 
-      console.log("Uploaded:", images.length, "images");
-
       images.forEach((img) => URL.revokeObjectURL(img.preview));
       setImages([]);
       setComment("");
+
+      onUploadSuccess?.(); // 🔥 refresh gallery / parent
     } catch (err) {
       console.error("Upload error:", err);
     } finally {
@@ -181,7 +186,7 @@ export default function UploadCard() {
           className="px-4 py-1.5 text-sm bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg shadow hover:opacity-90 disabled:opacity-50"
         >
           {loading
-            ? `Uploading ${images.length}...`
+            ? `Uploading ...`
             : `Upload ${images.length > 1 ? `${images.length} images` : "Image"}`}
         </button>
       </div>
