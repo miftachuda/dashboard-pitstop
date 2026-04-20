@@ -4,6 +4,8 @@ import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/image-gallery.css";
 
 import { pb } from "@/lib/pocketbase";
+import DashboardLayout from "@/components/MainLayout";
+import UploadCard from "@/components/PhotoUpload";
 
 type Photo = {
   id: string;
@@ -24,6 +26,7 @@ const PhotoGallery: React.FC = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   // 📥 Load photos
   const loadPhotos = async () => {
@@ -58,6 +61,7 @@ const PhotoGallery: React.FC = () => {
     const selected = e.target.files?.[0];
     if (!selected) return;
 
+    setProcessing(true);
     try {
       const compressed = await imageCompression(selected, {
         maxSizeMB: 1,
@@ -69,6 +73,8 @@ const PhotoGallery: React.FC = () => {
       setPreview(URL.createObjectURL(compressed));
     } catch (err) {
       console.error(err);
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -98,53 +104,33 @@ const PhotoGallery: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">📸 Photo Gallery</h1>
-      <div className="bg-white p-3 rounded-lg border mb-4 max-w-sm">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="text-sm"
-        />
-
-        {preview && (
-          <img
-            src={preview}
-            alt="preview"
-            className="mt-2 w-28 h-28 object-cover rounded"
-          />
+    <DashboardLayout>
+      <div className="p-6 max-w-3xl items-center justify-center mx-auto space-y-8">
+        {processing && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg flex flex-col items-center gap-3 shadow-xl">
+              <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-blue-600 font-medium">Processing image...</span>
+            </div>
+          </div>
         )}
+        <div className="p-6 max-w-3xl items-center justify-center mx-auto">
+          {/* Gallery Section */}
+          {galleryItems.length > 0 ? (
+            <ImageGallery
+              items={galleryItems}
+              showPlayButton={false}
+              showFullscreenButton={true}
+              showThumbnails={true}
+            />
+          ) : (
+            <p>No photos yet.</p>
+          )}
+        </div>
 
-        <textarea
-          placeholder="Comment..."
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          className="w-full mt-2 p-1.5 text-sm border rounded resize-none"
-          rows={2}
-        />
-
-        <button
-          onClick={handleUpload}
-          disabled={loading}
-          className="mt-2 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-        >
-          {loading ? "..." : "Upload"}
-        </button>
+        <UploadCard></UploadCard>
       </div>
-
-      {/* Gallery Section */}
-      {galleryItems.length > 0 ? (
-        <ImageGallery
-          items={galleryItems}
-          showPlayButton={false}
-          showFullscreenButton={true}
-          showThumbnails={true}
-        />
-      ) : (
-        <p>No photos yet.</p>
-      )}
-    </div>
+    </DashboardLayout>
   );
 };
 

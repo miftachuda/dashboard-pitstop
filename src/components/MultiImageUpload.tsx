@@ -128,7 +128,15 @@ export default function MultiImageUpload({
   };
 
   return (
-    <div className="w-full flex items-center mt-2">
+    <div className="w-full flex items-center mt-2 relative">
+      {loading && (
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-sm text-blue-600 font-medium">Processing...</span>
+          </div>
+        </div>
+      )}
       <div className="flex flex-row flex-wrap gap-2">
         {images.map((img, index) => (
           <div key={img.preview} className="relative flex-shrink-0 mr-1">
