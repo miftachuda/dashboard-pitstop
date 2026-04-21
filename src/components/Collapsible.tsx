@@ -12,7 +12,7 @@ export function Collapsible({ title, children }: Props) {
     <div className="border rounded-md mt-2">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full px-4 py-2 flex justify-between items-center bg-gray-50 text-[12px] font-medium rounded-md"
+        className="w-full px-1 py-1 flex justify-between items-center bg-gray-50 text-[12px] font-medium rounded-md"
       >
         <span>{title}</span>
         <span

@@ -15,6 +15,8 @@ import { StatsBar2 } from "@/components/StatsBar2";
 import Highlight from "@/components/Highlight";
 
 import DashboardLayout from "@/components/MainLayout";
+import { StepAdditional } from "@/components/StepAdditionals";
+import { AddStatbar } from "@/components/AddStatBar";
 export const equipmentTypes: EquipmentType[] = ["Heat Exchanger", "Piping"];
 const AdditionalPage = () => {
   const [tasks, setTasks] = useState<StepTask[]>([]);
@@ -295,14 +297,7 @@ const AdditionalPage = () => {
       <div className="min-h-screen bg-background">
         {/* Content */}
         <main className="max-w-8xl  px-4 sm:px-6 lg:px-8 py-8">
-          {loading ? (
-            <div className="flex justify-center py-6">
-              <div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-primary"></div>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-0">Joblist tambahan</div>
-          )}
-
+          <AddStatbar tasks={tasks} />
           <div className="mt-4 mb-6">
             <input
               type="text"
@@ -387,12 +382,12 @@ const AdditionalPage = () => {
           ) : (
             <div>
               <div>
-                {filteredTasks.length} Joblists {""}
+                {filteredTasks.length} Joblist{""}
                 {filteredTasks.length !== 1 && "s"} found
               </div>
-              <div className="grid items-start grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-5">
+              <div className="grid items-start grid-cols-1 gap-5">
                 {filteredTasks.map((task) => (
-                  <StepProgress
+                  <StepAdditional
                     key={task.id}
                     task={task}
                     onStepToggle={handleStepToggle}
