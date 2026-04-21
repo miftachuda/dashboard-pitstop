@@ -306,19 +306,7 @@ export function StepAdditional({
       setUploadingMap((prev) => ({ ...prev, [taskId]: false }));
     }
   };
-  const LoadingCard = ({ percent }: { percent: number }) => {
-    // clamp value between 0–100
-    const value = Math.min(100, Math.max(0, percent));
 
-    return (
-      <div className="w-full max-w-sm px-2 py-0 bg-white rounded-sm shadow border">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-mono font-semibold">{value}%</span>
-        </div>
-      </div>
-    );
-  };
   return (
     <div className="bg-card rounded-xl border p-3 hover:shadow-lg transition-shadow duration-300">
       {/* Header */}
@@ -356,8 +344,8 @@ export function StepAdditional({
                 className={`ml-2 px-1.5 py-0.5 text-[10px] font-semibold rounded border transition-all flex items-center justify-center
   ${
     percent === 100
-      ? "bg-white text-green-600 border-green-500 shadow-[inset_0_0_6px_rgba(34,197,94,0.5)]"
-      : "bg-white text-orange-500 border-orange-400 shadow-[inset_0_0_6px_rgba(251,146,60,0.5)]"
+      ? "bg-white text-green-600 border-green-500 ]"
+      : "bg-white text-yellow-500 border-yellow-400 ]"
   }`}
               >
                 {percent.toFixed(2)}%
@@ -539,7 +527,7 @@ export function StepAdditional({
           );
         })}
       </div>
-      <Collapsible title="">
+      <Collapsible title="Add Photos">
         <MultiImageUpload
           onChange={handlePhotosChange}
           taskId={task.id}

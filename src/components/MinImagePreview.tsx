@@ -29,26 +29,50 @@ export default function MinImagePreviewRow({
   const getImageUrl = (filename: string) => {
     return `${baseUrl}/api/files/${collectionID}/${recordId}/${filename}`;
   };
+
+  const [selectedIndex2, setSelectedIndex2] = useState(0);
+
+  const next2 = () => {
+    setSelectedIndex2((prev) => (prev + 1) % images.length);
+  };
+
+  const prev2 = () => {
+    setSelectedIndex2((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
   return (
     <>
       <div className="flex gap-2 p-2 mb-2 border rounded items-center w-fit">
-        {images.length === 0 ? (
-          <div className="flex flex-col items-center text-gray-400 text-sm">
-            <span>No image</span>
-          </div>
-        ) : (
-          images.map((file, i) => {
-            const url = getImageUrl(file);
-            return (
+        <div className="w-24 h-24 relative border rounded overflow-hidden">
+          {images.length === 0 ? (
+            <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+              No image
+            </div>
+          ) : (
+            <>
               <img
-                key={i}
-                src={url}
-                onClick={() => setSelectedIndex(i)}
-                className="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 shrink-0"
+                src={getImageUrl(images[selectedIndex2])}
+                className="w-full h-full object-cover"
+                onClick={() => setSelectedIndex(selectedIndex2)}
               />
-            );
-          })
-        )}
+
+              {/* Prev */}
+              <button
+                onClick={prev2}
+                className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/40 text-white px-1"
+              >
+                ‹
+              </button>
+
+              {/* Next */}
+              <button
+                onClick={next2}
+                className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/40 text-white px-1"
+              >
+                ›
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {selectedIndex !== null && (

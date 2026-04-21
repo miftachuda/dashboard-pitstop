@@ -17,6 +17,8 @@ import Highlight from "@/components/Highlight";
 import DashboardLayout from "@/components/MainLayout";
 import { StepAdditional } from "@/components/StepAdditionals";
 import { AddStatbar } from "@/components/AddStatBar";
+import ReportTable from "@/components/ReportTable";
+import ExportTable from "@/components/ExportTable";
 export const equipmentTypes: EquipmentType[] = ["Heat Exchanger", "Piping"];
 const AdditionalPage = () => {
   const [tasks, setTasks] = useState<StepTask[]>([]);
@@ -59,7 +61,7 @@ const AdditionalPage = () => {
 
     return matchSearch && matchPrefix && matchType;
   });
-  const prefixes = ["021", "022", "023", "024", "025", "041"];
+  const prefixes = ["021", "022", "023", "024", "025"];
   const handleStepToggle = async (
     taskId: string,
     stepId: string,
