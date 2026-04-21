@@ -1,4 +1,11 @@
-import { Image, Home, RefreshCw, Filter, CalendarDays } from "lucide-react";
+import {
+  Image,
+  Home,
+  RefreshCw,
+  Filter,
+  CalendarDays,
+  ClipboardPlus,
+} from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Sidebar({
@@ -13,7 +20,10 @@ export default function Sidebar({
 
   const menus = [
     { name: "Main", path: "/", icon: Home },
+
+    { name: "Additional Joblists", path: "/additionals", icon: ClipboardPlus },
     { name: "Restroke CV", path: "/restroke", icon: RefreshCw },
+
     { name: "Cleaning Strainer", path: "/strainer", icon: Filter },
     { name: "Daily Activity", path: "/daily", icon: CalendarDays },
     { name: "Photo Gallery", path: "/photos", icon: Image },

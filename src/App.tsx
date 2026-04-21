@@ -9,6 +9,7 @@ import StrainerPage from "./pages/StrainerPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import DailyActivity from "./components/DailyActivityPage.tsx";
 import PhotoGallery from "./pages/ImageGallery.tsx";
+import AdditionalPage from "./pages/Additional.tsx";
 
 const queryClient = new QueryClient();
 
@@ -21,9 +22,12 @@ const App = () => (
         <Routes>
           <Route path="/" element={<MainPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/additionals" element={<AdditionalPage />} />
+
           <Route path="/restroke" element={<RestrokePage />} />
           <Route path="/strainer" element={<StrainerPage />} />
           <Route path="/daily" element={<DailyActivity />} />
+
           <Route path="/photos" element={<PhotoGallery />} />
 
           <Route path="*" element={<NotFound />} />

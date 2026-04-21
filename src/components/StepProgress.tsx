@@ -28,6 +28,7 @@ interface StepProgressProps {
   };
   updateTaskState: (taskId: string, state: any) => void;
   onSave: (taskId: string) => void;
+  colID: string;
 }
 
 const priorityClasses: Record<Priority, string> = {
@@ -76,6 +77,7 @@ export function StepProgress({
   state,
   updateTaskState,
   onSave,
+  colID,
 }: StepProgressProps) {
   const [openSteps, setOpenSteps] = useState<Record<string, boolean>>({});
 
@@ -266,7 +268,7 @@ export function StepProgress({
   const [uploadingMap, setUploadingMap] = useState<Record<string, boolean>>({});
   const [imagesMap, setImagesMap] = useState<Record<string, string[]>>({});
   const [uploadDoneKey, setUploadDoneKey] = useState(0);
-  const handleUpload = async (taskId: string) => {
+  const handleUpload = async (taskId: string, colID: string) => {
     const files = photosMap[taskId];
     if (!files || files.length === 0) return;
 
@@ -278,9 +280,9 @@ export function StepProgress({
     });
 
     try {
-      await pb.collection("pitstop").update(taskId, formData);
+      await pb.collection(colID).update(taskId, formData);
 
-      const updated = await pb.collection("pitstop").getOne(taskId);
+      const updated = await pb.collection(colID).getOne(taskId);
 
       // ✅ update server images preview
       setImagesMap((prev) => ({
@@ -565,7 +567,7 @@ export function StepProgress({
           images={imagesMap[task.id] || task.photos || []}
           recordId={task.id}
           baseUrl={baseUrl}
-          collectionID="pitstop"
+          collectionID={colID}
         />
       </div>
       <Collapsible title="Upload Photos">
@@ -575,7 +577,7 @@ export function StepProgress({
           uploadedTrigger={uploadDoneKey}
         />
         <button
-          onClick={() => handleUpload(task.id)}
+          onClick={() => handleUpload(task.id, colID)}
           disabled={uploadingMap[task.id]}
           className={`mt-2 px-3 py-1 rounded text-white flex items-center gap-2 ${
             uploadingMap[task.id]

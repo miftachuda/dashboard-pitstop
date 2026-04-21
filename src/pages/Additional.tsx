@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import {
-  equipmentTypes,
+  EquipmentType,
   StepGroup,
   StepStatus,
   StepTask,
@@ -15,8 +15,8 @@ import { StatsBar2 } from "@/components/StatsBar2";
 import Highlight from "@/components/Highlight";
 
 import DashboardLayout from "@/components/MainLayout";
-
-const MainPage = () => {
+export const equipmentTypes: EquipmentType[] = ["Heat Exchanger", "Piping"];
+const AdditionalPage = () => {
   const [tasks, setTasks] = useState<StepTask[]>([]);
   const [search, setSearch] = useState("");
   const [prefixFilter, setPrefixFilter] = useState<string | null>(null);
@@ -86,7 +86,7 @@ const MainPage = () => {
 
     // Sync to PocketBase
     try {
-      await pb.collection("pitstop").update(taskId, {
+      await pb.collection("additionals").update(taskId, {
         steps: updatedSteps,
         updatedCustom: new Date().toISOString(),
       });
@@ -96,7 +96,7 @@ const MainPage = () => {
   };
   const syncTaskToPocketBase = async (task) => {
     try {
-      await pb.collection("pitstop").update(task.id, {
+      await pb.collection("additionals").update(task.id, {
         steps: task.steps,
         updatedCustom: new Date().toISOString(),
       });
@@ -170,7 +170,7 @@ const MainPage = () => {
   const [sortOption, setSortOption] = useState("title");
   async function loadTasks() {
     try {
-      const pitstopRecords = await pb.collection("pitstop").getFullList({
+      const pitstopRecords = await pb.collection("additionals").getFullList({
         sort: sortOption,
       });
 
@@ -300,11 +300,7 @@ const MainPage = () => {
               <div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-primary"></div>
             </div>
           ) : (
-            <div className="flex flex-col gap-0">
-              <StatsBar tasks={tasks} />
-              <StatsBar2 tasks={tasks} />
-              <Highlight />
-            </div>
+            <div className="flex flex-col gap-0">Joblist tambahan</div>
           )}
 
           <div className="mt-4 mb-6">
@@ -391,7 +387,7 @@ const MainPage = () => {
           ) : (
             <div>
               <div>
-                {filteredTasks.length} Equipment{""}
+                {filteredTasks.length} Joblists {""}
                 {filteredTasks.length !== 1 && "s"} found
               </div>
               <div className="grid items-start grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-5">
@@ -404,7 +400,7 @@ const MainPage = () => {
                     state={taskStates[task.id] || {}}
                     updateTaskState={updateTaskState}
                     onSave={handleSave}
-                    colID="pitstop"
+                    colID="additionals"
                   />
                 ))}
               </div>
@@ -416,4 +412,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default AdditionalPage;
