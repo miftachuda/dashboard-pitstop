@@ -39,7 +39,7 @@ const ExportPage = () => {
   async function loadTasks() {
     try {
       const pitstopRecords = await pb.collection("additionals").getFullList({
-        sort: "-updatedCustom",
+        sort: "title",
       });
 
       const fetchedTasks: StepTask[] = pitstopRecords.map(recordToStepTask);
