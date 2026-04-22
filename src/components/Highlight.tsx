@@ -17,6 +17,7 @@ import StatusPopup from "./StatusPopup";
 import MultiImageUpload from "./MultiImageUpload";
 import ImagePreviewRow from "./ImagePreview";
 import EditableHighlight from "./EditableHighlight";
+import SortDropdown, { SortOption } from "./SortDropdown";
 
 export type ActionItem = {
   action: string;
@@ -159,7 +160,12 @@ export default function Highlight() {
   useEffect(() => {
     loadHighlights();
   }, []);
-
+  const sortOptions: SortOption[] = [
+    { label: "Status (op,ns,ip,dn)", value: "state" },
+    { label: "Date (newest → oldest)", value: "date" },
+    { label: "Name (A → Z)", value: "name_asc" },
+    { label: "Name (Z → A)", value: "name_desc" },
+  ];
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -254,8 +260,24 @@ export default function Highlight() {
     "in progress": 3,
     done: 4,
   };
-  const sorted_hl = highlights.sort((a, b) => {
-    return statusOrder[a.status] - statusOrder[b.status];
+  // const sorted_hl = highlights.sort((a, b) => {
+  //   return statusOrder[a.status] - statusOrder[b.status];
+  // });
+  const [sort, setSort] = useState("state");
+
+  const sorted_hl = [...highlights].sort((a, b) => {
+    switch (sort) {
+      case "state":
+        return statusOrder[a.status] - statusOrder[b.status];
+      case "name_asc":
+        return a.tag_number.localeCompare(b.tag_number);
+      case "name_desc":
+        return b.tag_number.localeCompare(a.tag_number);
+      case "date":
+        return a.created - b.created;
+      default:
+        return 0;
+    }
   });
   return (
     <>
@@ -276,6 +298,12 @@ export default function Highlight() {
               >
                 + Add Highlight
               </button>
+              <SortDropdown
+                options={sortOptions}
+                value={sort}
+                onChange={setSort}
+              />
+
               {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                   {/* BACKDROP */}
@@ -429,11 +457,12 @@ export default function Highlight() {
                     {/* HEADER ROW */}
                     <div onClick={() => toggle(item.id)} className="w-full ">
                       <div className="flex flex-col items-end">
-                        <div className="w-full flex flex-col items-end justify-between p-1 hover:bg-muted transition-colors">
+                        <div className="w-full flex flex-col items-end justify-between p-1 hover:bg-slate-200 transition-colors">
                           <div className="flex items-center w-full gap-2 text-left pl-3 m-1">
                             {/* LEFT SIDE */}
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <div className="flex items-start gap-2 flex-1 min-w-0">
                               {/* TYPE */}
+
                               <span
                                 className={`min-w-32 text-[13px] font-bold px-3 py-1 rounded whitespace-nowrap ${typeClasses[item.type_equipment]}`}
                               >
@@ -444,10 +473,37 @@ export default function Highlight() {
 
                               {/* Editable (biar dia yang flexible) */}
                               <div className="flex-1 min-w-0">
-                                <EditableHighlight
-                                  item={item}
-                                  pb={pb}
-                                  onUpdated={handleHighlightUpdate}
+                                <div className="flex flex-row gap-2 mb-2">
+                                  <span className="flex items-center px-2.5 py-1 text-xs rounded bg-lime-50 text-lime-700 whitespace-nowrap">
+                                    {item.tag_number}
+                                  </span>
+
+                                  <EditableHighlight
+                                    item={item}
+                                    pb={pb}
+                                    onUpdated={handleHighlightUpdate}
+                                  />
+                                  <div className="flex items-stretch gap-2 w-full pr-3">
+                                    <div className="flex ml-auto flex-row">
+                                      <span className="inline-flex items-center  px-2.5 py-1 text-xs rounded-2xl bg-cyan-50 text-cyan-700">
+                                        PIC : {item.pic}
+                                      </span>
+                                      <span className="text-xs text-muted-foreground px-2.5 py-1 ">
+                                        Created:{" "}
+                                        {formatDistanceToNowStrict(
+                                          new Date(item.created),
+                                          {
+                                            addSuffix: true,
+                                          },
+                                        )}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <ActionList
+                                  itemId={item.id}
+                                  initialList={parseFollowUp(item.follow_up)}
+                                  colID="highlight_pitstop"
                                 />
                               </div>
                             </div>
@@ -468,26 +524,6 @@ export default function Highlight() {
                                   isOpen ? "rotate-180" : ""
                                 }`}
                               />
-                            </div>
-                          </div>
-
-                          <div className="flex items-stretch gap-2 w-full pr-3">
-                            <span className="flex items-center ml-2 px-2.5 py-1 text-xs rounded-2xl bg-lime-50 text-lime-700 whitespace-nowrap">
-                              tag : {item.tag_number}
-                            </span>
-                            <div className="flex ml-auto flex-row">
-                              <span className="inline-flex items-center  px-2.5 py-1 text-xs rounded-2xl bg-cyan-50 text-cyan-700">
-                                PIC : {item.pic}
-                              </span>
-                              <span className="text-xs text-muted-foreground px-2.5 py-1 ">
-                                Created:{" "}
-                                {formatDistanceToNowStrict(
-                                  new Date(item.created),
-                                  {
-                                    addSuffix: true,
-                                  },
-                                )}
-                              </span>
                             </div>
                           </div>
                         </div>
@@ -549,11 +585,6 @@ export default function Highlight() {
 
                           {uploading ? "Uploading..." : "Upload"}
                         </button>
-                        <ActionList
-                          itemId={item.id}
-                          initialList={parseFollowUp(item.follow_up)}
-                          colID="highlight_pitstop"
-                        />
                       </div>
                     </div>
                   </div>

@@ -158,7 +158,7 @@ const MainPage = () => {
       id: r.id,
       title: r.title ?? "",
       equipment: r.equipment ?? "",
-      type: r.type ?? "",
+      type: r.type.trim() ?? "",
       dicipline: r.dicipline ?? "",
       priority: r.priority ?? "low",
       assignee: r.assignee ?? "",

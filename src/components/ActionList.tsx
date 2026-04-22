@@ -69,7 +69,7 @@ export default function ActionList({
       {list.map((item, index) => (
         <div
           key={index}
-          className="flex items-center justify-between gap-2 bg-muted rounded px-2 py-1"
+          className="flex items-center justify-start gap-2 bg-muted rounded px-2 py-1"
         >
           {editingIndex === index ? (
             <input
@@ -78,7 +78,7 @@ export default function ActionList({
               className="border px-2 py-0 text-[12px] w-full"
             />
           ) : (
-            <div className="flex flex-col w-full">
+            <div className="flex flex-row gap-2">
               <span className="text-[12px]">{item.action}</span>
               <span className="text-[10px] text-gray-400">
                 {item.createdAt && (
