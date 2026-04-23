@@ -64,7 +64,8 @@ const ExportTable = ({ items }: { items: StepTask[] }) => {
 
     await Promise.all(
       items.map(async (item, i) => {
-        const fileName = item.photos?.[0];
+        const photos = item.photos;
+        const fileName = photos?.[photos.length - 1]; // 👈 ambil last photo
 
         if (fileName) {
           const imgUrl = `https://base.miftachuda.my.id/api/files/additionals/${item.id}/${fileName}`;
