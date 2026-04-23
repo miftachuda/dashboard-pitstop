@@ -133,7 +133,7 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
                 {/* Circular */}
                 <div className="relative w-36 aspect-square">
                   <CircularProgressbar
-                    value={progress.average}
+                    value={(stats.completed / stats.total) * 100}
                     text=""
                     circleRatio={0.75}
                     strokeWidth={18}
@@ -148,7 +148,7 @@ export function StatsBar2({ tasks }: StatsBar2Props) {
                   <div className="absolute mt-8 inset-4 flex flex-col items-center justify-center">
                     <div className="flex flex-col items-center leading-none gap-1">
                       <span className="text-[20px] font-bold text-gray-900">
-                        {progress.average.toFixed(2)}
+                        {((stats.completed / stats.total) * 100).toFixed(2)}
                       </span>
                       <span className="text-[14px] font-bold text-gray-900 -mt-1">
                         %

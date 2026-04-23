@@ -29,10 +29,6 @@ const calculateSummary = (items: StepTask[]) => {
   };
 };
 
-/* =========================
-   🖼️ HELPER IMAGE
-========================= */
-
 const loadImage = async (url: string): Promise<string> => {
   const res = await fetch(url, { mode: "cors" });
   const blob = await res.blob();
