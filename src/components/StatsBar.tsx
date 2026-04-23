@@ -58,13 +58,15 @@ export function StatsBar({ tasks }: StatsBarProps) {
     (t) => t.steps?.flatMap((s) => s.steplist || []) || [],
   );
 
-  const overallPercent =
-    allItems.length > 0
-      ? (
-          allItems.reduce((sum, item) => sum + (item.progress ?? 0), 0) /
-          allItems.length
-        ).toFixed(2)
-      : "0.00";
+  const overallPercent = (
+    totalEquipments > 0 ? (completedEquipments / totalEquipments) * 100 : 0
+  ).toFixed(2);
+  // allItems.length > 0
+  //   ? (
+  //       allItems.reduce((sum, item) => sum + (item.progress ?? 0), 0) /
+  //       allItems.length
+  //     ).toFixed(2)
+  //   : "0.00";
   const stats = [
     {
       label: "Steps In Progress",
