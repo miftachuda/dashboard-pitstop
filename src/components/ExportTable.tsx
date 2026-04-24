@@ -25,7 +25,7 @@ const calculateSummary = (items: StepTask[]) => {
   return {
     done,
     total: items.length,
-    percent: Math.round(progresses.reduce((a, b) => a + b, 0) / items.length),
+    percent: (done / items.length) * 100,
   };
 };
 
@@ -78,7 +78,7 @@ const ExportTable = ({ items }: { items: StepTask[] }) => {
 
     doc.setFontSize(10);
     doc.text(`Completed: ${summary.done} / ${summary.total}`, 14, 27);
-    doc.text(`Total Progress: ${summary.percent}%`, 14, 32);
+    doc.text(`Total Progress: ${summary.percent.toFixed(2)}%`, 14, 32);
 
     /* =========================
        TABLE DATA

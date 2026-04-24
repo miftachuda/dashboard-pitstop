@@ -209,15 +209,32 @@ const MainPage = () => {
   };
   const allPrefixes = ["All", ...prefixes];
   const getTotalProgress = () => {
-    const allItems = tasks.flatMap(
-      (t) => t.steps?.flatMap((s) => s.steplist || []) || [],
-    );
+    if (!tasks.length) return 0;
 
-    if (!allItems.length) return 0;
+    const stepAverages: number[] = [];
 
-    const total = allItems.reduce((sum, item) => sum + (item.progress ?? 0), 0);
+    tasks.forEach((task) => {
+      task.steps?.forEach((step) => {
+        const steplist = step.steplist || [];
 
-    return Number((total / allItems.length).toFixed(2));
+        if (steplist.length === 0) return;
+
+        const stepTotal = steplist.reduce(
+          (sum, item) => sum + (item.progress ?? 0),
+          0,
+        );
+
+        const stepAvg = stepTotal / steplist.length;
+        stepAverages.push(stepAvg);
+      });
+    });
+
+    if (!stepAverages.length) return 0;
+
+    const total =
+      stepAverages.reduce((sum, avg) => sum + avg, 0) / stepAverages.length;
+
+    return Number(total.toFixed(2));
   };
   const progressMap = useMemo(() => {
     const map: Record<string, number> = {};
@@ -225,9 +242,7 @@ const MainPage = () => {
     prefixes.forEach((p) => {
       map[p] = getProgressByPrefix(p);
     });
-
     map["All"] = getTotalProgress();
-
     return map;
   }, [tasks, prefixes]);
   const prefixColors: Record<

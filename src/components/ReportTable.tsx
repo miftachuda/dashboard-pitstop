@@ -29,7 +29,7 @@ const calculateSummary = (items: StepTask[]) => {
   return {
     done,
     total: items.length,
-    percent: Math.round(progresses.reduce((a, b) => a + b, 0) / items.length),
+    percent: (done / items.length) * 100,
   };
 };
 
@@ -96,7 +96,7 @@ const ReportTable = ({ items }: { items: StepTask[] }) => {
           <div>
             Completed: {summary.done} / {summary.total}{" "}
           </div>
-          <div>Total Progress: {summary.percent}%</div>
+          <div>Total Progress: {summary.percent.toFixed(2)}%</div>
         </div>
 
         {/* TABLE */}
