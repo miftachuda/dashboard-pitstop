@@ -25,8 +25,8 @@ const ExportPage = () => {
 
     return {
       id: r.id,
-      title: r.title ?? "",
-      equipment: r.equipment ?? "",
+      title: r.tag ?? "",
+      equipment: r.job ?? "",
       type: r.type ?? "",
       dicipline: r.dicipline ?? "",
       priority: r.priority ?? "low",
@@ -39,7 +39,7 @@ const ExportPage = () => {
   async function loadTasks() {
     try {
       const pitstopRecords = await pb.collection("additionals").getFullList({
-        sort: "title",
+        sort: "tag",
       });
 
       const fetchedTasks: StepTask[] = pitstopRecords.map(recordToStepTask);

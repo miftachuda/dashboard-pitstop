@@ -258,7 +258,7 @@ export function StepAdditional({
   };
   const onUpdateAssignee = async (taskId, assignee) => {
     try {
-      await pb.collection("pitstop").update(taskId, {
+      await pb.collection(colID).update(taskId, {
         assignee,
         updatedCustom: new Date().toISOString(),
       });

@@ -156,8 +156,8 @@ const MainPage = () => {
 
     return {
       id: r.id,
-      title: r.title ?? "",
-      equipment: r.equipment ?? "",
+      title: r.tag ?? "",
+      equipment: r.job ?? "",
       type: r.type.trim() ?? "",
       dicipline: r.dicipline ?? "",
       priority: r.priority ?? "low",
@@ -167,7 +167,7 @@ const MainPage = () => {
       photos,
     };
   }
-  const [sortOption, setSortOption] = useState("title");
+  const [sortOption, setSortOption] = useState("tag");
   async function loadTasks() {
     try {
       const pitstopRecords = await pb.collection("pitstop").getFullList({
@@ -394,8 +394,8 @@ const MainPage = () => {
             onChange={(e) => setSortOption(e.target.value)}
             className="border px-2 py-1 rounded font-light text-xs"
           >
-            <option value="title">Ascending</option>
-            <option value="-title">Descending</option>
+            <option value="tag">Ascending</option>
+            <option value="-tag">Descending</option>
             <option value="-updatedCustom">Latest Updated</option>
             <option value="updatedCustom">Oldest Updated</option>
           </select>
